@@ -24,5 +24,3 @@ def insert_user(username: str, password: str, role: str):
 
     except Exception as e:
         print("Fehler beim Einfügen des Users:", e)
-
-insert_user("Maxi", "admin1", "admin")
