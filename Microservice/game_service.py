@@ -1,4 +1,4 @@
-from Database.game_operations import get_category_list
+from Database.game_operations import get_category_list, Category
 
 
 def random_category_list(count: int) -> list:
