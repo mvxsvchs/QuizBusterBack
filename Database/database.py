@@ -1,6 +1,7 @@
 import psycopg
 from Config.postgres_config import *
 
+
 def get_connection():
     conn = psycopg.connect(
         host=ip,
