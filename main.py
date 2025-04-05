@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from Microservice.game_service import random_category_list
+from Microservice.game_service import random_category_list, random_question_list
 from Microservice.user_service import User, register
 
 app = FastAPI()
@@ -21,3 +21,7 @@ async def signup(user: User):
 @app.get("/category")
 async def get_category():
     return random_category_list(2)
+
+@app.get("/question")
+async def get_question(category:int):
+    return random_question_list(category, 3)

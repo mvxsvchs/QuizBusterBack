@@ -28,3 +28,17 @@ def get_category_list(count: int) -> list[Category]:
     conn.close()
     random_values = random.sample(result, count)
     return create_category(random_values)
+
+
+def get_question_list(category: int, count: int) -> list:
+    conn = get_connection()
+    cur = conn.cursor()
+
+    get_query = 'SELECT * FROM "Question" JOIN "Category" ON "Category"."ID" = "Question"."category_id" WHERE "Question"."category_id" = %s;'
+    cur.execute(get_query, (category,))
+    result = cur.fetchall()
+
+    cur.close()
+    conn.close()
+    random_values = random.sample(result, count)
+    return random_values
