@@ -30,15 +30,33 @@ def get_category_list(count: int) -> list[Category]:
     return create_category(random_values)
 
 
+class Question:
+    def __init__(self, category, question, correct_answer, incorrect_answers):
+        self.category = category
+        self.question = question
+        self.correct_answer = correct_answer
+        self.incorrect_answers = incorrect_answers
+
+
+def create_question(question_result: list) -> list[Question]:
+    result = list[Question]()
+    for row in question_result:
+        result.append(Question(row[0], row[1], row[2], row[3]))
+    return result
+
+
 def get_question_list(category: int, count: int) -> list:
     conn = get_connection()
     cur = conn.cursor()
 
-    get_query = 'SELECT * FROM "Question" JOIN "Category" ON "Category"."ID" = "Question"."category_id" WHERE "Question"."category_id" = %s;'
+    get_query = (
+        'SELECT "Category"."name", "Question"."question_text", "Question"."correct_answer", "Question"."incorrect_answers" '
+        'FROM "Question" JOIN "Category" ON "Category"."ID" = "Question"."category_id" '
+        'WHERE "Question"."category_id" = %s;')
     cur.execute(get_query, (category,))
     result = cur.fetchall()
 
     cur.close()
     conn.close()
     random_values = random.sample(result, count)
-    return random_values
+    return create_question(random_values)
