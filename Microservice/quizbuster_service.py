@@ -14,3 +14,18 @@ class User(BaseModel): #Register
 async def register(user: User):
     insert_user(user.username, user.password, "user")
     return {"message": f"{user.username} erstellt"}
+
+class Question(BaseModel):
+    category: str
+    question: str
+    correct_answer: str
+    incorrect_answers: str[str]
+
+@app.post("/questions")
+async def questions(question: Question):
+    insert_question(question)
+    return
+
+@app.get("/questions")
+async def questions():
+    return

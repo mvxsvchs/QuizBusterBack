@@ -1,15 +1,10 @@
-import psycopg
-from Config.postgres_config import *
+from Database.database import get_connection
+
 
 def insert_user(username: str, password: str, role: str):
     try:
-        conn = psycopg.connect(
-            host=ip,
-            port=port,
-            dbname=database,
-            user=db_username,
-            password=db_password
-        )
+        conn = get_connection()
+
         cur = conn.cursor()
 
         # SQL INSERT mit Platzhaltern (%s)
@@ -17,7 +12,6 @@ def insert_user(username: str, password: str, role: str):
         cur.execute(insert_query, (username, password, role))
 
         conn.commit()
-        print(f"User '{username}' erfolgreich eingefügt!")
 
         cur.close()
         conn.close()
