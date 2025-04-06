@@ -1,4 +1,3 @@
-import unittest
 import pytest
 from fastapi import HTTPException
 from jwt import InvalidTokenError
