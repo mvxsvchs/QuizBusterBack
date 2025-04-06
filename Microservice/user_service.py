@@ -44,7 +44,7 @@ def verify_password(plain_password: str, hashed_password: str):
 
 # Hole Nutzerdaten aus Datenbank
 def get_user(username: str) -> UserModel:
-    return get_user_data(username)
+    return get_user_data(username=username, connection=None)
 
 
 # Überprüfung ob Login Daten korrekt sind

@@ -61,9 +61,9 @@ def user_exists(username: str) -> bool:
         raise error
 
 
-def get_user_data(username: str) -> UserModel:
+def get_user_data(username: str, connection) -> UserModel:
     try:
-        conn = get_connection()
+        conn = connection or get_connection()
         cur = conn.cursor()
 
         # SQL Abfrage zum Erhalten der Nutzerdaten für den Nutzernamen
@@ -75,7 +75,8 @@ def get_user_data(username: str) -> UserModel:
         user = cur.fetchone()
 
         cur.close()
-        conn.close()
+        if connection is None:
+            conn.close()
 
         # Liste der Nutzerdaten wird zu einem Objekt gewandelt
         return create_user(user)
@@ -95,7 +96,7 @@ def update_points(username: str, points: int) -> int:
         cur = conn.cursor()
 
         # Nutzerdaten für Nutzernamen werden abgerufen
-        user = get_user_data(username)
+        user = get_user_data(username=username, connection=conn)
         # Zu dem bestehenden score wird das neue Ergebnis dazu addiert
         updated_points = int(user.score or 0) + points
 

@@ -68,12 +68,6 @@ async def post_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()])
     return login(form_data=form_data)
 
 
-@app.patch("/user/score")
-# In der Request wird ein Nutzertoken gefordert und mit der verify_user_token Funktion verifiziert
-async def patch_score(current_user: Annotated[User, Depends(verify_user_token)], score: Score):
-    return update_score(username=current_user.username, score=score)
-
-
 @app.get("/category")
 async def get_category():
     return random_category_list(count=2)
@@ -87,6 +81,12 @@ async def get_question(category: int):
 @app.get("/score")
 async def get_scores():
     return get_leaderboard(count=10)
+
+
+@app.patch("/user/score")
+# In der Request wird ein Nutzertoken gefordert und mit der verify_user_token Funktion verifiziert
+async def patch_score(current_user: Annotated[User, Depends(verify_user_token)], score: Score):
+    return update_score(username=current_user.username, score=score)
 
 
 @app.get("/achievement")
