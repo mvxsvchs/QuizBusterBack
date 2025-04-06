@@ -1,3 +1,5 @@
+import psycopg
+
 from Database.database import get_connection
 
 
@@ -81,6 +83,11 @@ def add_user_achievement(username: str, achievement_id: int):
 
         cur.close()
         conn.close()
+        return {"message": "User achievement added."}
+    # Der Nutzer hat in der Datenbank bereits dieses Achievement
+    except psycopg.errors.UniqueViolation:
+        print(f"User hat bereits das Achievement {achievement_id}")
+        return {"message": "User achievement already exists."}
     except Exception as error:
         # Gibt eine Fehlermeldung aus und wirft den Fehler erneut
         print("Fehler bei hinzufügen des Nutzer Achievements:", error)

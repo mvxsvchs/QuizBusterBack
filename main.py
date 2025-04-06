@@ -7,7 +7,7 @@ from jwt import InvalidTokenError
 from starlette.middleware.cors import CORSMiddleware
 
 from Config.JWT_config import SECRET_KEY, ALGORITHM
-from Microservice.achievement_service import user_achievements, all_achievements, unlock_user_achievement
+from Microservice.achievement_service import user_achievements, all_achievements, unlock_user_achievement, Achievement
 from Microservice.game_service import random_category_list, random_question_list
 from Microservice.user_service import User, register, login, get_user, Score, update_score, get_leaderboard
 
@@ -102,5 +102,5 @@ async def get_user_achievements(current_user: Annotated[User, Depends(verify_use
 
 @app.patch("/user/achievement")
 # In der Request wird ein Nutzertoken gefordert und mit der verify_user_token Funktion verifiziert
-async def patch_user_achievement(current_user: Annotated[User, Depends(verify_user_token)], achievement: int):
-    return unlock_user_achievement(username=current_user.username, achievement_id=achievement)
+async def patch_user_achievement(current_user: Annotated[User, Depends(verify_user_token)], achievement: Achievement):
+    return unlock_user_achievement(username=current_user.username, achievement=achievement)
