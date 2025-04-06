@@ -1,16 +1,16 @@
 from Database.database import get_connection
 
 
-class User:
+class UserModel:
     # Constructor
-    def __init__(self, username, password, score):
+    def __init__(self, username: str, password: str, score):
         self.username = username
-        self.password = password,
+        self.password = password
         self.score = score
 
 
-def create_user(user_result: list) -> User:
-    result = User(user_result[0], user_result[1], user_result[2])
+def create_user(user_result: list) -> UserModel:
+    result = UserModel(str(user_result[0]), str(user_result[1]), user_result[2])
     return result
 
 
@@ -53,7 +53,7 @@ def user_exists(username: str) -> bool:
         raise error
 
 
-def get_user_data(username: str) -> User:
+def get_user_data(username: str) -> UserModel:
     try:
         conn = get_connection()
         cur = conn.cursor()
