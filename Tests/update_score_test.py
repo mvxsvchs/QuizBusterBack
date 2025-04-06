@@ -1,11 +1,10 @@
 import pytest
 from fastapi.testclient import TestClient
-from pytest_mock import mocker
 
 from Microservice.user_service import create_access_token
 from Tests.conftest import get_test_db_connection
 from main import app
-from Database.user_operations import get_connection, UserModel
+from Database.user_operations import UserModel
 
 
 # region ↓ Pytest Fixtures ↓
