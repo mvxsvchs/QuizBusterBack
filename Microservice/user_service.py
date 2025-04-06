@@ -37,7 +37,7 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-# Vergleich von verschlüsselten Passwörtern
+# Vergleich von gegebenen Passwort mit verschlüsselten Passwort
 def verify_password(plain_password: str, hashed_password: str):
     return pwd_context.verify(plain_password, hashed_password)
 
@@ -49,10 +49,10 @@ def get_user(username: str) -> UserModel:
 
 # Überprüfung ob Login Daten korrekt sind
 def authenticate_user(username: str, password: str):
-    user = get_user(username)
+    user = get_user(username=username)
     if not user:
         return False
-    if not verify_password(password, user.password):
+    if not verify_password(plain_password=password, hashed_password=user.password):
         return False
     return user
 
@@ -68,11 +68,11 @@ def create_access_token(data: dict):
 
 def register(user: User) -> Token:
     # Check: Gibt es den User schon?
-    if user_exists(user.username):
+    if user_exists(username=user.username):
         raise HTTPException(status_code=404, detail="Benutzername bereits vergeben")
 
     # Wenn nicht: Speichern
-    insert_user(user.username, get_password_hash(user.password), "user")
+    insert_user(username=user.username, password=get_password_hash(user.password), role="user")
     access_token = create_access_token(data={"sub": user.username})
 
     return Token(access_token=access_token, token_type="bearer")
@@ -80,7 +80,7 @@ def register(user: User) -> Token:
 
 def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
     # Check: Sind Login Daten korrekt?
-    user = authenticate_user(form_data.username, form_data.password)
+    user = authenticate_user(username=form_data.username, password=form_data.password)
     if not user:
         raise HTTPException(
             status_code=401,
@@ -95,10 +95,10 @@ def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
 
 def update_score(username: str, score: Score):
     # Update den score in der Datenbank und speichere den neuen Punktestand
-    new_score = update_points(username, score.points)
+    new_score = update_points(username=username, points=score.points)
     return Score(points=new_score)
 
 
 def get_leaderboard(count: int):
     # Gib die Top Nutzer inkl. Punktestand
-    return get_scores(count)
+    return get_scores(limit=count)

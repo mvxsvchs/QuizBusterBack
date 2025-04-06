@@ -14,7 +14,7 @@ class UserModel:
 
 # Erstelle User Objekt aus Datenbank Satz
 def create_user(user_result: list) -> UserModel:
-    result = UserModel(str(user_result[0]), str(user_result[1]), user_result[2])
+    result = UserModel(username=str(user_result[0]), password=str(user_result[1]), score=user_result[2])
     return result
 
 
@@ -24,7 +24,7 @@ def insert_user(username: str, password: str, role: str):
         cur = conn.cursor()
 
         # SQL-Abfrage zum Hinzufügen der Nutzerdaten
-        insert_query = ('INSERT INTO "User" (username, password, role)'
+        insert_query = ('INSERT INTO "User" ("username", "password", "role")'
                         ' VALUES (%s, %s, %s);')
         cur.execute(insert_query, (username, password, role))
         conn.commit()
@@ -45,7 +45,7 @@ def user_exists(username: str) -> bool:
         # SQL-Abfrage zur Überprüfung, ob der Benutzer existiert (1 ist ein Platzhalter)
         get_query = ('SELECT 1 '
                      'FROM "User" '
-                     'WHERE username = %s;')
+                     'WHERE "username" = %s;')
         cur.execute(get_query, (username,))
 
         # Wenn ein Ergebnis zurückkommt, existiert der Benutzer
@@ -69,7 +69,7 @@ def get_user_data(username: str) -> UserModel:
         # SQL Abfrage zum Erhalten der Nutzerdaten für den Nutzernamen
         get_query = ('SELECT "username", "password", "score" '
                      'FROM "User" '
-                     'WHERE username = %s;')
+                     'WHERE "username" = %s;')
         cur.execute(get_query, (username,))
         # Nur ein Datensatz wird abgerufen
         user = cur.fetchone()
@@ -102,7 +102,7 @@ def update_points(username: str, points: int) -> int:
         # Das score Feld für den Nutzer wird mit dem neuen Wert geupdated
         update_query = ('UPDATE "User" '
                         'SET "score" = %s '
-                        'WHERE username = %s;')
+                        'WHERE "username" = %s;')
         cur.execute(update_query, (updated_points, username,))
         conn.commit()
 
@@ -119,7 +119,7 @@ def update_points(username: str, points: int) -> int:
 # Klasse für Score des Nutzers
 class ScoreModel:
     # Constructor
-    def __init__(self, username: str, score):
+    def __init__(self, username: str, score: int):
         self.username = username
         self.score = score
 
@@ -129,7 +129,7 @@ def create_score(user_result: list) -> list[ScoreModel]:
     result = list[ScoreModel]()
     for row in user_result:
         # Aus jedem Eintrag der Datenbank wird ein Objekt erstellt
-        result.append(ScoreModel(row[0], row[1]))
+        result.append(ScoreModel(username=str(row[0]), score=int(row[1])))
     return result
 
 

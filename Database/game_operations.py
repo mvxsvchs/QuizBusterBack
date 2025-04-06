@@ -7,7 +7,7 @@ import random
 # Klasse für Kategorie wie in Datenbank
 class Category:
     # Constructor
-    def __init__(self, id, name):
+    def __init__(self, id: int, name: str):
         self.id = id
         self.name = name
 
@@ -17,7 +17,7 @@ def create_category(category_result: list) -> list[Category]:
     result = list[Category]()
     for row in category_result:
         # Aus jedem Eintrag der Datenbank wird ein Objekt erstellt
-        result.append(Category(row[0], row[1]))
+        result.append(Category(id=int(row[0]), name=str(row[1])))
     return result
 
 
@@ -53,7 +53,7 @@ def get_category_list(count: int) -> list[Category]:
 
 # Klasse für Frage wie in Datenbank
 class Question:
-    def __init__(self, category, question, correct_answer, incorrect_answers):
+    def __init__(self, category: str, question: str, correct_answer: str, incorrect_answers: list[str]):
         self.category = category
         self.question = question
         self.correct_answer = correct_answer
@@ -65,7 +65,8 @@ def create_question(question_result: list) -> list[Question]:
     result = list[Question]()
     for row in question_result:
         # Aus jedem Eintrag der Datenbank wird ein Objekt erstellt
-        result.append(Question(row[0], row[1], row[2], row[3]))
+        result.append(
+            Question(category=str(row[0]), question=str(row[1]), correct_answer=str(row[2]), incorrect_answers=row[3]))
     return result
 
 

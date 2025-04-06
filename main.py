@@ -7,7 +7,7 @@ from jwt import InvalidTokenError
 from starlette.middleware.cors import CORSMiddleware
 
 from Config.JWT_config import SECRET_KEY, ALGORITHM
-from Microservice.achievement_service import user_achievements, all_achievements, add_user_achievement, Achievement
+from Microservice.achievement_service import user_achievements, all_achievements, unlock_user_achievement
 from Microservice.game_service import random_category_list, random_question_list
 from Microservice.user_service import User, register, login, get_user, Score, update_score, get_leaderboard
 
@@ -59,34 +59,34 @@ async def verify_user_token(token: Annotated[str, Depends(oauth2_scheme)]):
 
 @app.post("/register")
 async def post_signup(user: User):
-    return register(user)
+    return register(user=user)
 
 
 @app.post("/token")
 # In der Request werden die Login-Daten des Nutzers gefordert
 async def post_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
-    return login(form_data)
+    return login(form_data=form_data)
 
 
 @app.patch("/user/score")
 # In der Request wird ein Nutzertoken gefordert und mit der verify_user_token Funktion verifiziert
 async def patch_score(current_user: Annotated[User, Depends(verify_user_token)], score: Score):
-    return update_score(current_user.username, score)
+    return update_score(username=current_user.username, score=score)
 
 
 @app.get("/category")
 async def get_category():
-    return random_category_list(2)
+    return random_category_list(count=2)
 
 
 @app.get("/question")
 async def get_question(category: int):
-    return random_question_list(category, 3)
+    return random_question_list(category=category, count=3)
 
 
 @app.get("/score")
 async def get_scores():
-    return get_leaderboard(10)
+    return get_leaderboard(count=10)
 
 
 @app.get("/achievement")
@@ -97,10 +97,10 @@ async def get_achievements():
 @app.get("/user/achievement")
 # In der Request wird ein Nutzertoken gefordert und mit der verify_user_token Funktion verifiziert
 async def get_user_achievements(current_user: Annotated[User, Depends(verify_user_token)]):
-    return user_achievements()
+    return user_achievements(username=current_user.username)
 
 
 @app.patch("/user/achievement")
 # In der Request wird ein Nutzertoken gefordert und mit der verify_user_token Funktion verifiziert
-async def patch_user_achievement(current_user: Annotated[User, Depends(verify_user_token)], achievement: Achievement):
-    return add_user_achievement()
+async def patch_user_achievement(current_user: Annotated[User, Depends(verify_user_token)], achievement: int):
+    return unlock_user_achievement(username=current_user.username, achievement_id=achievement)
