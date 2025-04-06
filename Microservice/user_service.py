@@ -23,7 +23,7 @@ class Token(BaseModel):
     token_type: str
 
 
-# Klasse für user score
+# Klasse für das User Score JSON
 class Score(BaseModel):
     points: int
 
@@ -42,6 +42,7 @@ def verify_password(plain_password: str, hashed_password: str):
     return pwd_context.verify(plain_password, hashed_password)
 
 
+# Hole Nutzerdaten aus Datenbank
 def get_user(username: str) -> UserModel:
     return get_user_data(username)
 
@@ -78,6 +79,7 @@ def register(user: User) -> Token:
 
 
 def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
+    # Check: Sind Login Daten korrekt?
     user = authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -85,15 +87,18 @@ def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
             detail="Falscher Nutzername oder Passwort",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    # Erstelle ein JWT Token
     access_token = create_access_token(data={"sub": form_data.username})
 
     return Token(access_token=access_token, token_type="bearer")
 
 
-def add_score(username: str, score: Score):
+def update_score(username: str, score: Score):
+    # Update den score in der Datenbank und speichere den neuen Punktestand
     new_score = update_points(username, score.points)
     return Score(points=new_score)
 
 
-def get_leaderboard():
-    return get_scores(10)
+def get_leaderboard(count: int):
+    # Gib die Top Nutzer inkl. Punktestand
+    return get_scores(count)
