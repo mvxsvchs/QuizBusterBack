@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from starlette.middleware.cors import CORSMiddleware
 
 from Microservice.game_service import random_category_list, random_question_list
-from Microservice.user_service import User, register
+from Microservice.user_service import User, register, login
 
 app = FastAPI()
 app.add_middleware(
@@ -25,7 +25,7 @@ async def signup(user: User):
 
 
 @app.post("/token")
-async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
+async def get_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     return login(form_data)
 
 

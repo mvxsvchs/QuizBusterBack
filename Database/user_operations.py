@@ -40,19 +40,31 @@ def user_exists(username: str) -> bool:
         raise error
 
 
-def get_user(username: str):
+class User:
+    # Constructor
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+
+
+def create_user(user_result: list) -> User:
+    result = User(user_result[0], user_result[1])
+    return result
+
+
+def get_user(username: str) -> User:
     try:
         conn = get_connection()
         cur = conn.cursor()
 
-        get_query = 'SELECT * FROM "User" WHERE username = %s;'
+        get_query = 'SELECT "username", "password" FROM "User" WHERE username = %s;'
         cur.execute(get_query, (username,))
         user = cur.fetchone()
 
         cur.close()
         conn.close()
 
-        return user
+        return create_user(user)
     except Exception as error:
         # Gibt eine Fehlermeldung aus und wirft den Fehler erneut
         print("Fehler bei der Benutzerprüfung:", error)
