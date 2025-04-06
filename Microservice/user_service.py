@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from passlib.context import CryptContext
 
 from Config.JWT_config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
-from Database.user_operations import insert_user, user_exists, get_user
+from Database.user_operations import insert_user, user_exists, get_user_data, update_points
 
 
 # Klasse für das User JSON
@@ -23,6 +23,11 @@ class Token(BaseModel):
     token_type: str
 
 
+# Klasse für user score
+class Score(BaseModel):
+    points: int
+
+
 # Kontext zum verschlüsseln des Passworts
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -35,6 +40,10 @@ def get_password_hash(password):
 # Vergleich von verschlüsselten Passwörtern
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
+
+
+def get_user(username: str):
+    return get_user_data(username)
 
 
 # Überprüfung ob Login Daten korrekt sind
@@ -79,3 +88,8 @@ def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
     access_token = create_access_token(data={"sub": form_data.username})
 
     return Token(access_token=access_token, token_type="bearer")
+
+
+def add_score(username: str, score: Score):
+    new_score = update_points(username, score.points)
+    return Score(points=new_score)

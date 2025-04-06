@@ -3,13 +3,14 @@ from Database.database import get_connection
 
 class User:
     # Constructor
-    def __init__(self, username, password):
+    def __init__(self, username, password, score):
         self.username = username
-        self.password = password
+        self.password = password,
+        self.score = score
 
 
 def create_user(user_result: list) -> User:
-    result = User(user_result[0], user_result[1])
+    result = User(user_result[0], user_result[1], user_result[2])
     return result
 
 
@@ -52,12 +53,12 @@ def user_exists(username: str) -> bool:
         raise error
 
 
-def get_user(username: str) -> User:
+def get_user_data(username: str) -> User:
     try:
         conn = get_connection()
         cur = conn.cursor()
 
-        get_query = 'SELECT "username", "password" FROM "User" WHERE username = %s;'
+        get_query = 'SELECT "username", "password", "score" FROM "User" WHERE username = %s;'
         cur.execute(get_query, (username,))
         user = cur.fetchone()
 
@@ -65,6 +66,28 @@ def get_user(username: str) -> User:
         conn.close()
 
         return create_user(user)
+    except Exception as error:
+        # Gibt eine Fehlermeldung aus und wirft den Fehler erneut
+        print("Fehler bei der Benutzerprüfung:", error)
+        raise error
+
+
+def update_points(username: str, points: int) -> int:
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+
+        user = get_user_data(username)
+        updated_points = int(user.score or 0) + points
+
+        update_query = 'UPDATE "User" SET "score" = %s WHERE username = %s;'
+        cur.execute(update_query, (updated_points, username,))
+        conn.commit()
+
+        cur.close()
+        conn.close()
+
+        return updated_points
     except Exception as error:
         # Gibt eine Fehlermeldung aus und wirft den Fehler erneut
         print("Fehler bei der Benutzerprüfung:", error)
