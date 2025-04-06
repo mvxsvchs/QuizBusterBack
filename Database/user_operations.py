@@ -1,5 +1,6 @@
 from Database.database import get_connection
 
+
 def insert_user(username: str, password: str, role: str):
     try:
         conn = get_connection()
@@ -23,7 +24,8 @@ def user_exists(username: str) -> bool:
         cur = conn.cursor()
 
         # SQL-Abfrage zur Überprüfung, ob der Benutzer existiert (1 ist ein Platzhalter)
-        cur.execute('SELECT 1 FROM "User" WHERE username = %s;', (username,))
+        get_query = 'SELECT 1 FROM "User" WHERE username = %s;'
+        cur.execute(get_query, (username,))
 
         # Wenn ein Ergebnis zurückkommt, existiert der Benutzer
         exists = cur.fetchone() is not None
@@ -37,3 +39,21 @@ def user_exists(username: str) -> bool:
         print("Fehler bei der Benutzerprüfung:", error)
         raise error
 
+
+def get_user(username: str):
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+
+        get_query = 'SELECT * FROM "User" WHERE username = %s;'
+        cur.execute(get_query, (username,))
+        user = cur.fetchone()
+
+        cur.close()
+        conn.close()
+
+        return user
+    except Exception as error:
+        # Gibt eine Fehlermeldung aus und wirft den Fehler erneut
+        print("Fehler bei der Benutzerprüfung:", error)
+        raise error
