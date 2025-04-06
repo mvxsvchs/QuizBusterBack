@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from passlib.context import CryptContext
 
 from Config.JWT_config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
-from Database.user_operations import insert_user, user_exists, get_user_data, update_points, UserModel
+from Database.user_operations import insert_user, user_exists, get_user_data, update_points, UserModel, get_scores
 
 
 # Klasse für das User JSON
@@ -93,3 +93,7 @@ def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
 def add_score(username: str, score: Score):
     new_score = update_points(username, score.points)
     return Score(points=new_score)
+
+
+def get_leaderboard():
+    return get_scores(10)

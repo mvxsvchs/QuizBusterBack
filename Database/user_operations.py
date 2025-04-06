@@ -19,7 +19,8 @@ def insert_user(username: str, password: str, role: str):
         conn = get_connection()
         cur = conn.cursor()
 
-        insert_query = 'INSERT INTO "User" (username, password, role) VALUES (%s, %s, %s);'
+        insert_query = ('INSERT INTO "User" (username, password, role)'
+                        ' VALUES (%s, %s, %s);')
         cur.execute(insert_query, (username, password, role))
         conn.commit()
 
@@ -37,7 +38,9 @@ def user_exists(username: str) -> bool:
         cur = conn.cursor()
 
         # SQL-Abfrage zur Überprüfung, ob der Benutzer existiert (1 ist ein Platzhalter)
-        get_query = 'SELECT 1 FROM "User" WHERE username = %s;'
+        get_query = ('SELECT 1 '
+                     'FROM "User" '
+                     'WHERE username = %s;')
         cur.execute(get_query, (username,))
 
         # Wenn ein Ergebnis zurückkommt, existiert der Benutzer
@@ -58,7 +61,9 @@ def get_user_data(username: str) -> UserModel:
         conn = get_connection()
         cur = conn.cursor()
 
-        get_query = 'SELECT "username", "password", "score" FROM "User" WHERE username = %s;'
+        get_query = ('SELECT "username", "password", "score" '
+                     'FROM "User" '
+                     'WHERE username = %s;')
         cur.execute(get_query, (username,))
         user = cur.fetchone()
 
@@ -80,7 +85,9 @@ def update_points(username: str, points: int) -> int:
         user = get_user_data(username)
         updated_points = int(user.score or 0) + points
 
-        update_query = 'UPDATE "User" SET "score" = %s WHERE username = %s;'
+        update_query = ('UPDATE "User" '
+                        'SET "score" = %s '
+                        'WHERE username = %s;')
         cur.execute(update_query, (updated_points, username,))
         conn.commit()
 
@@ -88,6 +95,43 @@ def update_points(username: str, points: int) -> int:
         conn.close()
 
         return updated_points
+    except Exception as error:
+        # Gibt eine Fehlermeldung aus und wirft den Fehler erneut
+        print("Fehler bei der Benutzerprüfung:", error)
+        raise error
+
+
+class ScoreModel:
+    # Constructor
+    def __init__(self, username: str, score):
+        self.username = username
+        self.score = score
+
+
+def create_score(user_result: list) -> list[ScoreModel]:
+    result = list[ScoreModel]()
+    for row in user_result:
+        result.append(ScoreModel(row[0], row[1]))
+    return result
+
+
+def get_scores(limit: int) -> list[ScoreModel]:
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+
+        get_query = ('SELECT "username", "score" '
+                     'FROM "User" '
+                     'WHERE "score" IS NOT NULL '
+                     'ORDER BY "score" DESC '
+                     'LIMIT %s;')
+        cur.execute(get_query, (limit,))
+        result = cur.fetchall()
+
+        cur.close()
+        conn.close()
+
+        return create_score(result)
     except Exception as error:
         # Gibt eine Fehlermeldung aus und wirft den Fehler erneut
         print("Fehler bei der Benutzerprüfung:", error)

@@ -21,7 +21,8 @@ def get_category_list(count: int) -> list[Category]:
         conn = get_connection()
         cur = conn.cursor()
 
-        get_query = 'SELECT "ID", "name" FROM "Category";'
+        get_query = ('SELECT "ID", "name" '
+                     'FROM "Category";')
         cur.execute(get_query)
         result = cur.fetchall()
 

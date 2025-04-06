@@ -8,7 +8,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from Config.JWT_config import SECRET_KEY, ALGORITHM
 from Microservice.game_service import random_category_list, random_question_list
-from Microservice.user_service import User, register, login, get_user, Score, add_score
+from Microservice.user_service import User, register, login, get_user, Score, add_score, get_leaderboard
 
 app = FastAPI()
 app.add_middleware(
@@ -64,3 +64,8 @@ async def get_category():
 @app.get("/question")
 async def get_question(category: int):
     return random_question_list(category, 3)
+
+
+@app.get("/score")
+async def get_scores():
+    return get_leaderboard()
