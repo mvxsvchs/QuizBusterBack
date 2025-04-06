@@ -1,6 +1,18 @@
 from Database.database import get_connection
 
 
+class User:
+    # Constructor
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+
+
+def create_user(user_result: list) -> User:
+    result = User(user_result[0], user_result[1])
+    return result
+
+
 def insert_user(username: str, password: str, role: str):
     try:
         conn = get_connection()
@@ -38,18 +50,6 @@ def user_exists(username: str) -> bool:
         # Gibt eine Fehlermeldung aus und wirft den Fehler erneut
         print("Fehler bei der Benutzerprüfung:", error)
         raise error
-
-
-class User:
-    # Constructor
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
-
-
-def create_user(user_result: list) -> User:
-    result = User(user_result[0], user_result[1])
-    return result
 
 
 def get_user(username: str) -> User:
