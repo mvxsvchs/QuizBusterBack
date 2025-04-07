@@ -1,4 +1,4 @@
-name: Python Lint
+name: CI.yml
 
 on:
   pull_request:
