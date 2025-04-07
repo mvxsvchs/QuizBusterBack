@@ -23,6 +23,19 @@ jobs:
           pip install -r requirements.txt
           pip install pylint  
 
-      - name: Run pylint with custom config
+      - name: Run pylint and fail if score < 9.0
         run: |
-          pylint --disable=E1101 $(git ls-files '*.py')
+          echo "Running pylint..."
+          SCORE_LINE=$(pylint --disable=E1101 $(git ls-files '*.py') | tee /dev/stderr | grep "Your code has been rated at")
+          echo "$SCORE_LINE"
+
+          SCORE=$(echo "$SCORE_LINE" | awk '{print $7}' | cut -d'/' -f1)
+          THRESHOLD=9.0
+
+          result=$(awk -v score="$SCORE" -v threshold="$THRESHOLD" 'BEGIN {print (score < threshold)}')
+          if [ "$result" -eq 1 ]; then
+            echo "❌ Pylint score $SCORE is below the threshold of $THRESHOLD"
+            exit 1
+          else
+            echo "✅ Pylint score $SCORE meets the threshold"
+          fi
