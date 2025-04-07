@@ -3,7 +3,8 @@
 Dieses Modul enthält Funktionen für den direkten Zugriff auf die Datenbanktabelle "User".
 Es stellt Methoden zum Einfügen, Abrufen, Überprüfen der Existenz und Aktualisieren
 von Benutzerdaten sowie zum Abrufen der Rangliste (Scores) bereit.
-Es definiert auch Datenmodellklassen (`UserModel`, `ScoreModel`), die Datenbankzeilen repräsentieren.
+Es definiert auch Datenmodellklassen (`UserModel`, `ScoreModel`),
+die Datenbankzeilen repräsentieren.
 """
 
 from typing import List, Optional
@@ -106,7 +107,7 @@ def user_exists(username: str) -> bool:
 
         # SQL-Abfrage zur Überprüfung, ob der Benutzer existiert
         # SELECT 1 ist effizienter als SELECT * oder SELECT username
-        get_query = ('SELECT 1 FROM "User" WHERE "username" = %s;')
+        get_query = 'SELECT 1 FROM "User" WHERE "username" = %s;'
         cur.execute(get_query, (username,))
 
         # Wenn fetchone() ein Ergebnis liefert (egal was), existiert der Benutzer
@@ -213,7 +214,7 @@ def update_points(username: str, points: int) -> int:
         updated_points = current_score + points
 
         # Das score Feld für den Nutzer wird mit dem neuen Wert ge-updated
-        update_query = ('UPDATE "User" SET "score" = %s WHERE "username" = %s;')
+        update_query = 'UPDATE "User" SET "score" = %s WHERE "username" = %s;'
         cur.execute(update_query, (updated_points, username,))
         conn.commit()
 

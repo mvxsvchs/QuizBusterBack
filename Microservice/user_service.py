@@ -3,7 +3,7 @@
 Dieses Modul enthält die Logik für alle Operationen, die Benutzer betreffen.
 """
 from datetime import datetime, timezone, timedelta
-from typing import Annotated, Optional, Dict, Any, List
+from typing import Annotated, Optional, Dict, Any
 
 import jwt
 from fastapi import HTTPException, Depends

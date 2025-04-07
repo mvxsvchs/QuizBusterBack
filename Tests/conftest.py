@@ -18,10 +18,16 @@ import pytest
 import psycopg
 from psycopg import OperationalError
 
-from Config.postgres_config import TEST_DB_IP, TEST_DB_PORT, TEST_DATABASE, TEST_DB_USERNAME, TEST_DB_PASSWORD
+from Config.postgres_config import (
+    TEST_DB_IP,
+    TEST_DB_PORT,
+    TEST_DATABASE,
+    TEST_DB_USERNAME,
+    TEST_DB_PASSWORD,
+)
 
 
-def get_test_db_connection() -> psycopg.Connection:
+def get_test_db_connection():
     """Stellt eine Verbindung zur PostgreSQL-Testdatenbank her.
 
     Returns:
@@ -68,7 +74,7 @@ def create_test_database_if_not_exists():
         cur = conn.cursor()
 
         # Prüfe, ob die Datenbank existiert
-        get_query = ('SELECT 1 FROM pg_database WHERE datname = %s')
+        get_query = 'SELECT 1 FROM pg_database WHERE datname = %s'
         cur.execute(get_query, (TEST_DATABASE,))
         exists = cur.fetchone()
 
