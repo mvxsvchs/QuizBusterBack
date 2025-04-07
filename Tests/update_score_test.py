@@ -129,7 +129,7 @@ def get_user_score_from_db(username: str) -> Optional[int]:
 
 # region ↓ Tests ↓
 
-def test_patch_score_success(test_client: TestClient, mocker):
+def test_patch_score_success(test_client: TestClient, mocker, create_test_database_if_not_exists, manage_test_db_data):
     """Testet den Erfolgsfall für den PATCH /user/score Endpunkt.
 
     Szenario:

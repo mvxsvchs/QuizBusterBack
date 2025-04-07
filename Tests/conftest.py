@@ -53,9 +53,8 @@ def get_test_db_connection():
         pytest.exit(f"Test-DB Verbindung fehlgeschlagen: {e}", returncode=1)
 
 
-# Diese Fixture wird einmal pro Test-Session ausgeführt (`scope="session"`)
-# und automatisch vor allen Tests (`autouse=True`).
-@pytest.fixture(scope="session", autouse=True)
+# Diese Fixture wird einmal pro Integration Test ausgeführt
+@pytest.fixture
 def create_test_database_if_not_exists():
     """Pytest Session-Fixture: Erstellt die Test-DB, falls sie nicht existiert.
 
@@ -96,11 +95,10 @@ def create_test_database_if_not_exists():
             conn.close()
 
 
-# Diese Fixture wird vor JEDEM Test ausgeführt (`scope="function"`)
-# und automatisch (`autouse=True`).
-@pytest.fixture(scope="function", autouse=True)
+# Diese Fixture wird einmal pro Integration Test ausgeführt
+@pytest.fixture
 def manage_test_db_data():
-    """Pytest Function-Fixture: Bereitet die 'User'-Tabelle vor jedem Test vor.
+    """Pytest Function-Fixture: Bereitet die 'User'-Tabelle vor.
 
     Diese Fixture stellt sicher, dass die Tabelle 'User' in der Test-Datenbank
     existiert und vor der Ausführung jedes Tests vollständig geleert wird (`TRUNCATE`).
