@@ -84,14 +84,14 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 # region ↓ Benutzer-Operationen ↓
 
-def get_user(username: str) -> Optional[UserModel]:
+def get_user(username: str) -> UserModel:
     """Ruft Benutzerdaten aus der Datenbank ab.
 
     Args:
         username (str): Der Benutzername des gesuchten Benutzers.
 
     Returns:
-        Optional[UserModel]: Das `UserModel`-Objekt, falls der Benutzer gefunden wurde.
+        UserModel: Das `UserModel`-Objekt, falls der Benutzer gefunden wurde.
     """
     return get_user_data(username=username)
 

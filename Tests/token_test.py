@@ -20,6 +20,13 @@ async def test_verify_user_token_decode_fails(mocker):
     # GIVEN: jwt.decode wird gemockt, um InvalidTokenError auszulösen
     mocker.patch('main.jwt.decode',
                  side_effect=InvalidTokenError("Simulierter Decode-Fehler"))
+    # AND: Ein User-Objekt, das den Benutzer repräsentiert
+    mock_user_object = User(username="test", password="hashed_password_example")
+    # AND: main.get_user gibt dieses User-Objekt zurück
+    mock_get_user = mocker.patch(
+        'main.get_user',
+        return_value=mock_user_object
+    )
 
     # WHEN: verify_user_token wird mit einem beliebigen Token aufgerufen
     with pytest.raises(HTTPException) as exc_info:
@@ -27,6 +34,8 @@ async def test_verify_user_token_decode_fails(mocker):
 
     # THEN: Eine HTTPException mit Status 401 wird erwartet
     assert exc_info.value.status_code == 401
+    # AND: get_user wurde nicht aufgerufen
+    mock_get_user.assert_not_called()
 
 
 # Testet, ob verify_user_token eine 401 HTTPException auslöst,
@@ -43,6 +52,13 @@ async def test_verify_user_token_payload_missing_username(mocker):
         'main.jwt.decode',
         return_value=valid_payload_without_username
     )
+    # AND: Ein User-Objekt, das den Benutzer repräsentiert
+    mock_user_object = User(username="test", password="hashed_password_example")
+    # AND: main.get_user gibt dieses User-Objekt zurück
+    mock_get_user = mocker.patch(
+        'main.get_user',
+        return_value=mock_user_object
+    )
 
     # WHEN: verify_user_token wird aufgerufen
     with pytest.raises(HTTPException) as exc_info:
@@ -50,6 +66,8 @@ async def test_verify_user_token_payload_missing_username(mocker):
 
     # THEN: Eine HTTPException mit Status 401 wird erwartet
     assert exc_info.value.status_code == 401
+    # AND: get_user wurde nicht aufgerufen
+    mock_get_user.assert_not_called()
 
 
 # Testet, ob verify_user_token eine 401 HTTPException auslöst,
