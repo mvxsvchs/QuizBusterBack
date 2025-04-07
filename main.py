@@ -16,7 +16,7 @@ app = FastAPI()
 # API Service config für die Website
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5174"],  # React-Frontend (Vite)
+    allow_origins=["http://localhost:5173"],  # React-Frontend (Vite)
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
