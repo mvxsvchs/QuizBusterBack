@@ -1,0 +1,169 @@
+Index: Tests/conftest.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import pytest\r\nimport psycopg\r\nfrom psycopg import OperationalError\r\n\r\nfrom Config.postgres_config import *\r\n\r\n\r\n# Stellt eine Verbindung zur TEST-Datenbank her\r\ndef get_test_db_connection():\r\n    try:\r\n        conn = psycopg.connect(\r\n            host=TEST_DB_IP,\r\n            port=TEST_DB_PORT,\r\n            dbname=TEST_DATABASE,\r\n            user=TEST_DB_USERNAME,\r\n            password=TEST_DB_PASSWORD,\r\n            autocommit=True\r\n        )\r\n        return conn\r\n    except OperationalError as e:\r\n        print(f\"FEHLER: Konnte keine Verbindung zur Test-DB '{TEST_DATABASE}' herstellen\")\r\n        pytest.exit(f\"Test-DB Verbindung fehlgeschlagen: {e}\", returncode=1)\r\n\r\n\r\n# Erstellt die Test-Datenbank einmal pro Session, falls sie noch nicht existiert\r\n@pytest.fixture(scope=\"session\", autouse=True)\r\ndef create_test_database_if_not_exists():\r\n    conn = None\r\n    try:\r\n        conn = get_test_db_connection()\r\n        cur = conn.cursor()\r\n        get_query = ('SELECT 1 '\r\n                     'FROM pg_database '\r\n                     'WHERE datname = %s')\r\n        cur.execute(get_query, (TEST_DATABASE,))\r\n        exists = cur.fetchone()\r\n        if not exists:\r\n            print(f\"Erstelle Test-Datenbank: {TEST_DATABASE}...\")\r\n            create_query = f'CREATE DATABASE \"{TEST_DATABASE}\"'\r\n            cur.execute(create_query)\r\n            print(\"Test-Datenbank erstellt.\")\r\n        else:\r\n            print(f\"Test-Datenbank '{TEST_DATABASE}' existiert bereits.\")\r\n    except Exception as e:\r\n        print(f\"FEHLER beim Erstellen der Test-DB '{TEST_DATABASE}': {e}\")\r\n    finally:\r\n        if conn:\r\n            # Verbindung schließen\r\n            conn.close()\r\n\r\n\r\n# Diese Fixture läuft vor und nach JEDEM Test\r\n# Sie stellt sicher, dass die benötigten Tabellen existieren und leer sind.\r\n@pytest.fixture(scope=\"function\", autouse=True)\r\ndef manage_test_db_data():\r\n    try:\r\n        # Stellt Verbindung her & schließt sie automatisch\r\n        with get_test_db_connection() as conn:\r\n            # Erstellt Cursor & schließt ihn automatisch\r\n            with conn.cursor() as cur:\r\n                # Stellt sicher, dass die Tabelle existiert\r\n                create_query = ('CREATE TABLE IF NOT EXISTS \"User\" ('\r\n                                'username VARCHAR(100) PRIMARY KEY,'\r\n                                'password VARCHAR(255) NOT NULL,'\r\n                                'score INTEGER);')\r\n                cur.execute(create_query)\r\n\r\n                # Leert die Tabelle vor dem Test\r\n                clear_query = 'TRUNCATE TABLE \"User\" RESTART IDENTITY CASCADE;'\r\n                cur.execute(clear_query)\r\n\r\n                conn.commit()\r\n                print(\"Test-DB Tabellen bereit und geleert für den Test\")\r\n\r\n            yield\r\n    except Exception as e:\r\n        print(f\"FEHLER während des Test-DB Setups: {e}\")\r\n        raise\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Tests/conftest.py b/Tests/conftest.py
+--- a/Tests/conftest.py	(revision 496496d585ff5c76322a10e6b910daf3efc8250d)
++++ b/Tests/conftest.py	(date 1744053409602)
+@@ -1,12 +1,34 @@
++"""Modul für Pytest-Fixtures zur Verwaltung der Test-Datenbankumgebung.
++
++Es enthält:
++- Eine Hilfsfunktion zum Herstellen einer Verbindung zur Test-Datenbank.
++- Eine Session-Scoped Fixture (`create_test_database_if_not_exists`), die sicherstellt,
++  dass die Test-Datenbank zu Beginn der Test-Session existiert.
++- Eine Function-Scoped Fixture (`manage_test_db_data`), die vor jedem einzelnen Test
++  läuft, um sicherzustellen, dass die benötigten Tabellen existieren und leer sind.
++
++Abhängigkeiten:
++- pytest: Für das Fixture-System.
++- psycopg: Für die PostgreSQL-Datenbankinteraktion.
++- Config.postgres_config: Beinhaltet die Verbindungsdetails für die Test-Datenbank
++"""
++
+ import pytest
+ import psycopg
+ from psycopg import OperationalError
+ 
+-from Config.postgres_config import *
++from Config.postgres_config import TEST_DB_IP, TEST_DB_PORT, TEST_DATABASE, TEST_DB_USERNAME, TEST_DB_PASSWORD
++
+ 
++def get_test_db_connection() -> psycopg.Connection:
++    """Stellt eine Verbindung zur PostgreSQL-Testdatenbank her.
+ 
+-# Stellt eine Verbindung zur TEST-Datenbank her
+-def get_test_db_connection():
++    Returns:
++        psycopg.Connection: Ein aktives, autocommitting Verbindungsobjekt zur Test-DB.
++
++    Raises:
++        SystemExit: Wird über `pytest.exit` ausgelöst, wenn die Verbindung fehlschlägt.
++    """
+     try:
+         conn = psycopg.connect(
+             host=TEST_DB_IP,
+@@ -16,63 +38,97 @@
+             password=TEST_DB_PASSWORD,
+             autocommit=True
+         )
++        print(f"Verbindung zur Test-DB '{TEST_DATABASE}' erfolgreich hergestellt.")
+         return conn
+     except OperationalError as e:
+-        print(f"FEHLER: Konnte keine Verbindung zur Test-DB '{TEST_DATABASE}' herstellen")
++        print(f"FEHLER: Konnte keine Verbindung zur Test-DB '{TEST_DATABASE}' herstellen: {e}")
++        # Beendet den Pytest-Lauf, da Tests ohne DB-Verbindung nicht sinnvoll sind
+         pytest.exit(f"Test-DB Verbindung fehlgeschlagen: {e}", returncode=1)
+ 
+ 
+-# Erstellt die Test-Datenbank einmal pro Session, falls sie noch nicht existiert
++# Diese Fixture wird einmal pro Test-Session ausgeführt (`scope="session"`)
++# und automatisch vor allen Tests (`autouse=True`).
+ @pytest.fixture(scope="session", autouse=True)
+ def create_test_database_if_not_exists():
++    """Pytest Session-Fixture: Erstellt die Test-DB, falls sie nicht existiert.
++
++    Versucht eine Verbindung zur konfigurierten Test-Datenbank herzustellen.
++    Wenn erfolgreich, prüft sie in `pg_database`, ob der Eintrag existiert.
++    Falls die Datenbank nicht existiert, versucht sie, die Test-DB
++    zu erstellen.
++    """
+     conn = None
+     try:
++        # Versucht, sich initial zu verbinden
++        print(f"Prüfe Existenz der Test-DB '{TEST_DATABASE}'...")
+         conn = get_test_db_connection()
+         cur = conn.cursor()
+-        get_query = ('SELECT 1 '
+-                     'FROM pg_database '
+-                     'WHERE datname = %s')
++
++        # Prüfe, ob die Datenbank im Katalog existiert
++        get_query = ('SELECT 1 FROM pg_database WHERE datname = %s')
+         cur.execute(get_query, (TEST_DATABASE,))
+         exists = cur.fetchone()
++
+         if not exists:
+-            print(f"Erstelle Test-Datenbank: {TEST_DATABASE}...")
+-            create_query = f'CREATE DATABASE "{TEST_DATABASE}"'
+-            cur.execute(create_query)
+-            print("Test-Datenbank erstellt.")
++            print(f"Test-Datenbank '{TEST_DATABASE}' nicht gefunden.")
++            print(f"Versuche Test-Datenbank zu erstellen: {TEST_DATABASE}...")
++            cur.execute(
++                f'CREATE DATABASE "{TEST_DATABASE}"')
+         else:
+             print(f"Test-Datenbank '{TEST_DATABASE}' existiert bereits.")
++
++        cur.close()
++
+     except Exception as e:
+-        print(f"FEHLER beim Erstellen der Test-DB '{TEST_DATABASE}': {e}")
++        print(f"FEHLER während der Test-DB-Erstellung: {e}")
++        pytest.exit(f"Fehler bei Test-DB Setup: {e}", returncode=1)
+     finally:
+-        if conn:
+-            # Verbindung schließen
++        # Verbindung schließen
++        if conn and not conn.closed:
+             conn.close()
+ 
+ 
+-# Diese Fixture läuft vor und nach JEDEM Test
+-# Sie stellt sicher, dass die benötigten Tabellen existieren und leer sind.
++# Diese Fixture wird vor JEDEM Test ausgeführt (`scope="function"`)
++# und automatisch (`autouse=True`).
+ @pytest.fixture(scope="function", autouse=True)
+ def manage_test_db_data():
++    """Pytest Function-Fixture: Bereitet die 'User'-Tabelle vor jedem Test vor.
++
++    Diese Funktion stellt sicher, dass die Tabelle 'User' in der Test-Datenbank
++    existiert und vor der Ausführung jedes Tests vollständig geleert wird (`TRUNCATE`).
++    """
+     try:
+-        # Stellt Verbindung her & schließt sie automatisch
+-        with get_test_db_connection() as conn:
+-            # Erstellt Cursor & schließt ihn automatisch
++        # Verwendung von 'with', um sicherzustellen, dass conn/cur geschlossen werden
++        with get_test_db_connection() as conn:  # nutzt autocommit=True
+             with conn.cursor() as cur:
+-                # Stellt sicher, dass die Tabelle existiert
++                # Stellt sicher, dass die Tabelle existiert ( idempotent )
++                print("Sicherstellen, dass Tabelle 'User' existiert...")
+                 create_query = ('CREATE TABLE IF NOT EXISTS "User" ('
+                                 'username VARCHAR(100) PRIMARY KEY,'
+                                 'password VARCHAR(255) NOT NULL,'
+                                 'score INTEGER);')
+                 cur.execute(create_query)
++                print("Tabelle 'User' bereit.")
+ 
+-                # Leert die Tabelle vor dem Test
++                # Leert die Tabelle vor dem Test für einen sauberen Zustand
++                # RESTART IDENTITY setzt Sequenzen zurück (falls vorhanden)
++                # CASCADE löscht abhängige Einträge (falls Foreign Keys existieren)
++                print("Leere Tabelle 'User'...")
+                 clear_query = 'TRUNCATE TABLE "User" RESTART IDENTITY CASCADE;'
+                 cur.execute(clear_query)
++                print("Tabelle 'User' geleert.")
++
++                # Commit ist bei autocommit=True nicht zwingend nötig, schadet aber nicht
++                # conn.commit() # Bei autocommit=True nicht nötig
+ 
+-                conn.commit()
+-                print("Test-DB Tabellen bereit und geleert für den Test")
++        # yield markiert den Punkt, an dem der Test ausgeführt wird
++        yield  # Hier läuft der eigentliche Test
+ 
+-            yield
++        print("--- Test-DB Teardown (nach Test) ---")
++        # Hier könnte Aufräum-Logik stehen, falls nötig (z.B. bestimmte Daten löschen)
++        # In diesem Fall ist das TRUNCATE am Anfang des *nächsten* Tests ausreichend.
++
+     except Exception as e:
+-        print(f"FEHLER während des Test-DB Setups: {e}")
++        print(f"FEHLER während des Test-DB Setups/Teardowns: {e}")
++        # Fehler hier weiterleiten, damit der Test fehlschlägt
+         raise

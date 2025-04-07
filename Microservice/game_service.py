@@ -1,3 +1,9 @@
+"""Service-Modul für den Abruf von Spielinhalten (Kategorien & Fragen).
+
+Es stellt einfache Funktionen bereit,
+um eine bestimmte Anzahl zufälliger Kategorien oder Fragen für eine
+spezifische Kategorie zu erhalten.
+"""
 from Database.game_operations import get_category_list, get_question_list
 
 
