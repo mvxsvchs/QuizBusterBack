@@ -34,8 +34,6 @@ from Microservice.user_service import (
     update_score,
     get_leaderboard, Token,
 )
-from Utils.auth_utils import verify_user_token
-
 
 # region ↓ App Initialisierung und Konfiguration ↓
 
