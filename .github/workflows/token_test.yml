@@ -25,4 +25,4 @@ jobs:
 
       - name: Run token_test.py
         run: |
-          pytest Tests/token_test.py
+          pytest token_test.py
