@@ -212,7 +212,8 @@ async def get_achievements() -> list[Achievement]:
 async def get_user_achievements(
         current_user: Annotated[User, Depends(verify_user_token)]
 ) -> list[Achievement]:
-    """Gibt eine Liste der Achievements zurück, die der aktuell authentifizierte Benutzer erreicht hat.
+    """Gibt eine Liste der Achievements zurück,
+       die der aktuell authentifizierte Benutzer erreicht hat.
 
     Dieser Endpunkt ist geschützt und erfordert ein gültiges JWT Bearer Token.
     Ruft den `achievement_service` auf, um die Achievements des durch das Token

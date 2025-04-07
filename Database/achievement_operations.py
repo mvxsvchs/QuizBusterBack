@@ -12,7 +12,7 @@ from Database.database import get_connection
 # region ↓ Abfragen für "Achievement" Objekt ↓
 
 # pylint: disable=too-few-public-methods
-class Achievement:
+class AchievementModel:
     """Repräsentiert ein einzelnes Achievement aus der Datenbank.
 
     Attributes:
@@ -29,7 +29,7 @@ class Achievement:
         self.description = description
 
 
-def create_achievement(achievement_result: list) -> list[Achievement]:
+def create_achievement(achievement_result: list) -> list[AchievementModel]:
     """Wandelt eine Liste von Datenbank-Zeilen in eine Liste von Achievement-Objekten um.
 
     Iteriert durch die Ergebnisliste einer Datenbankabfrage
@@ -45,11 +45,11 @@ def create_achievement(achievement_result: list) -> list[Achievement]:
         list[Achievement]: Eine Liste von `Achievement`-Instanzen. Gibt eine leere
                            Liste zurück, wenn die Eingabeliste leer ist.
     """
-    result: list[Achievement] = []
+    result: list[AchievementModel] = []
     for row in achievement_result:
         # Aus jedem Eintrag der Datenbank wird ein Objekt erstellt
         result.append(
-            Achievement(
+            AchievementModel(
                 achievement_id=int(row[0]),
                 name=str(row[1]),
                 description=str(row[2])
@@ -58,7 +58,7 @@ def create_achievement(achievement_result: list) -> list[Achievement]:
     return result
 
 
-def get_achievement_list() -> list[Achievement]:
+def get_achievement_list() -> list[AchievementModel]:
     """Ruft alle verfügbaren Achievements aus der Datenbank ab.
 
     Returns:
@@ -89,7 +89,6 @@ def get_achievement_list() -> list[Achievement]:
         # Der Datensatz im Listen-Format wird zu Objekt gewandelt
         return create_achievement(db_result)
     except Exception as error:
-        # Gibt eine Fehlermeldung aus und wirft den Fehler erneut
         print(f"Fehler bei der Achievement Abfrage: {error}")
         # Sicherstellen, dass die Verbindung geschlossen wird, auch im Fehlerfall
         if conn and not conn.closed:
@@ -97,7 +96,7 @@ def get_achievement_list() -> list[Achievement]:
         raise error
 
 
-def get_user_achievement_list(username: str) -> list[Achievement]:
+def get_user_achievement_list(username: str) -> list[AchievementModel]:
     """Ruft alle Achievements ab, die ein bestimmter Benutzer erreicht hat.
 
     Args:
@@ -134,7 +133,6 @@ def get_user_achievement_list(username: str) -> list[Achievement]:
         # Der Datensatz im Listen-Format wird zu Objekt gewandelt
         return create_achievement(db_result)
     except Exception as error:
-        # Gibt eine Fehlermeldung aus und wirft den Fehler erneut
         print(f"Fehler bei der Nutzer Achievement Abfrage für '{username}': {error}")
         # Sicherstellen, dass die Verbindung geschlossen wird, auch im Fehlerfall
         if conn and not conn.closed:
