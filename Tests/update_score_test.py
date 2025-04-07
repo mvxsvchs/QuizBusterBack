@@ -161,7 +161,7 @@ def test_patch_score_success(test_client: TestClient, mocker, create_test_databa
     request_body = {"points": points_to_add}
 
     # Abhängigkeiten mocken, die im API-Call verwendet werden
-    #    Stelle sicher, dass Operationen innerhalb des API-Calls die Test-DB nutzen
+    # Stelle sicher, dass Operationen innerhalb des API-Calls die Test-DB nutzen
     mock_conn = get_test_db_connection()
     mocker.patch(
         'Database.user_operations.get_connection',
