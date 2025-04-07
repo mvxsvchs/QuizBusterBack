@@ -2,7 +2,8 @@
 
 Dieses Modul definiert die `Achievement`-Datenstruktur und stellt Funktionen
 bereit, um Achievements aus der Datenbank abzurufen und einem Benutzer neue Achievements zuzuweisen.
-Es nutzt die `psycopg`-Bibliothek und die zentrale `get_connection`-Funktion für die Datenbankverbindung.
+Es nutzt die `psycopg`-Bibliothek und die zentrale `get_connection`-Funktion
+für die Datenbankverbindung.
 """
 from psycopg import errors as psycopg_errors
 from Database.database import get_connection
@@ -31,7 +32,8 @@ class Achievement:
 def create_achievement(achievement_result: list) -> list[Achievement]:
     """Wandelt eine Liste von Datenbank-Zeilen in eine Liste von Achievement-Objekten um.
 
-    Iteriert durch die Ergebnisliste einer Datenbankabfrage und erstellt für jede Zeile ein `Achievement`-Objekt.
+    Iteriert durch die Ergebnisliste einer Datenbankabfrage
+    und erstellt für jede Zeile ein `Achievement`-Objekt.
 
     Args:
         achievement_result (list): Eine Liste von Listen, wie sie von
@@ -148,8 +150,10 @@ def add_user_achievement(username: str, achievement_id: int) -> dict:
         achievement_id (int): Die ID des Achievements, das hinzugefügt werden soll.
 
     Returns:
-        dict: Ein Dictionary, das den Erfolg (`{"message": "User achievement added."}`)
-              oder das Vorhandensein des Eintrags (`{"message": "User achievement already exists."}`)
+        dict: Ein Dictionary, das den Erfolg
+              (`{"message": "User achievement added."}`)
+              oder das Vorhandensein des Eintrags
+              (`{"message": "User achievement already exists."}`)
               anzeigt.
 
     Raises:
@@ -181,7 +185,8 @@ def add_user_achievement(username: str, achievement_id: int) -> dict:
             conn.close()
         return {"message": "User achievement already exists."}
     except Exception as error:
-        print(f"Fehler bei hinzufügen des Nutzer Achievements ({username}, {achievement_id}): {error}")
+        print(f"Fehler bei hinzufügen des Nutzer Achievements "
+              f"({username}, {achievement_id}): {error}")
         if conn and not conn.closed:
             # Sicherstellen, dass die Verbindung geschlossen wird, auch im Fehlerfall
             conn.close()

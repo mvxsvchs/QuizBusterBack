@@ -15,7 +15,11 @@ class UserModel:
 
 # Erstelle User Objekt aus Datenbank Satz
 def create_user(user_result: list) -> UserModel:
-    result = UserModel(username=str(user_result[0]), password=str(user_result[1]), score=user_result[2])
+    result = UserModel(
+        username=str(user_result[0]),
+        password=str(user_result[1]),
+        score=user_result[2]
+    )
     return result
 
 

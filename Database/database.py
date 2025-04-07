@@ -1,9 +1,19 @@
+"""Modul zur Bereitstellung einer Datenbankverbindungsfunktion.
+
+Dieses Modul enthält die Funktion `get_connection`, die dafür zuständig ist,
+eine Verbindung zu einer PostgreSQL-Datenbank herzustellen.
+
+Das Ziel ist es, eine wiederverwendbare und zentrale Methode für den Zugriff
+auf die konfigurierte Datenbankverbindung bereitzustellen. Die Funktion
+beinhaltet grundlegende Fehlerbehandlung für Verbindungs- und Importprobleme.
+"""
+
 import psycopg
 from psycopg import OperationalError
 from Config.postgres_config import DB_IP, DB_PORT, DATABASE, DB_USERNAME, DB_PASSWORD
 
 
-def get_connection():
+def get_connection() -> psycopg.Connection:
     """Stellt eine Verbindung zur PostgreSQL-Datenbank her.
 
     Diese Funktion liest die notwendigen Verbindungsparameter (Host, Port,

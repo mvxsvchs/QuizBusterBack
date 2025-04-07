@@ -96,7 +96,7 @@ def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
     return Token(access_token=access_token, token_type="bearer")
 
 
-def update_score(username: str, score: Score):
+def update_score(username: str, score: Score) -> Score:
     # Update den score in der Datenbank und speichere den neuen Punktestand
     new_score = update_points(username=username, points=score.points)
     return Score(points=new_score)
