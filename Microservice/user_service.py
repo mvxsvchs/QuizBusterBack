@@ -7,23 +7,26 @@ from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel
 from passlib.context import CryptContext
 
-from Config.JWT_config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+from Config.jwt_config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 from Database.user_operations import insert_user, user_exists, get_user_data, update_points, UserModel, get_scores
 
 
 # Klasse für das User JSON
+# pylint: disable=too-few-public-methods
 class User(BaseModel):
     username: str
     password: str
 
 
 # Klasse für das Token JSON
+# pylint: disable=too-few-public-methods
 class Token(BaseModel):
     access_token: str
     token_type: str
 
 
 # Klasse für das User Score JSON
+# pylint: disable=too-few-public-methods
 class Score(BaseModel):
     points: int
 
@@ -100,5 +103,5 @@ def update_score(username: str, score: Score):
 
 
 def get_leaderboard(count: int):
-    # Gib die Top Nutzer inkl. Punktestand
+    # Gib die top Nutzer inklusive Punktestand
     return get_scores(limit=count)

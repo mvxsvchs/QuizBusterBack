@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jwt import InvalidTokenError
 from starlette.middleware.cors import CORSMiddleware
 
-from Config.JWT_config import SECRET_KEY, ALGORITHM
+from Config.jwt_config import SECRET_KEY, ALGORITHM
 from Microservice.achievement_service import user_achievements, all_achievements, unlock_user_achievement, Achievement
 from Microservice.game_service import random_category_list, random_question_list
 from Microservice.user_service import User, register, login, get_user, Score, update_score, get_leaderboard

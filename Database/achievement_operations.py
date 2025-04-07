@@ -6,10 +6,11 @@ from Database.database import get_connection
 # region ↓ Abfragen für "Achievement" Objekt ↓
 
 # Klasse für Achievement wie in Datenbank
+# pylint: disable=too-few-public-methods
 class Achievement:
     # Constructor
-    def __init__(self, id: int, name: str, description: str):
-        self.id = id
+    def __init__(self, achievement_id: int, name: str, description: str):
+        self.achievement_id = achievement_id
         self.name = name
         self.description = description
 
@@ -19,7 +20,7 @@ def create_achievement(achievement_result: list) -> list[Achievement]:
     result = list[Achievement]()
     for row in achievement_result:
         # Aus jedem Eintrag der Datenbank wird ein Objekt erstellt
-        result.append(Achievement(id=int(row[0]), name=str(row[1]), description=str(row[2])))
+        result.append(Achievement(achievement_id=int(row[0]), name=str(row[1]), description=str(row[2])))
     return result
 
 
@@ -53,7 +54,8 @@ def get_user_achievement_list(username: str) -> list[Achievement]:
 
         # SQL Abfrage zum Erhalten aller Achievements des Nutzers
         get_query = ('SELECT "Achievement"."ID", "Achievement"."name", "Achievement"."description" '
-                     'FROM "Achievement" JOIN "User_Achievement" ON "Achievement"."ID" = "User_Achievement"."achievement_id"'
+                     'FROM "Achievement" '
+                     'JOIN "User_Achievement" ON "Achievement"."ID" = "User_Achievement"."achievement_id"'
                      'WHERE "User_Achievement"."username"=%s;')
         cur.execute(get_query, (username,))
         # Alle Datensätze werden abgerufen

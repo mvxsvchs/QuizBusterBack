@@ -9,16 +9,16 @@ from Config.postgres_config import *
 def get_test_db_connection():
     try:
         conn = psycopg.connect(
-            host=test_db_ip,
-            port=test_db_port,
-            dbname=test_database,
-            user=test_db_username,
-            password=test_db_password,
+            host=TEST_DB_IP,
+            port=TEST_DB_PORT,
+            dbname=TEST_DATABASE,
+            user=TEST_DB_USERNAME,
+            password=TEST_DB_PASSWORD,
             autocommit=True
         )
         return conn
     except OperationalError as e:
-        print(f"FEHLER: Konnte keine Verbindung zur Test-DB '{test_database}' herstellen")
+        print(f"FEHLER: Konnte keine Verbindung zur Test-DB '{TEST_DATABASE}' herstellen")
         pytest.exit(f"Test-DB Verbindung fehlgeschlagen: {e}", returncode=1)
 
 
@@ -32,17 +32,17 @@ def create_test_database_if_not_exists():
         get_query = ('SELECT 1 '
                      'FROM pg_database '
                      'WHERE datname = %s')
-        cur.execute(get_query, (test_database,))
+        cur.execute(get_query, (TEST_DATABASE,))
         exists = cur.fetchone()
         if not exists:
-            print(f"Erstelle Test-Datenbank: {test_database}...")
-            create_query = f'CREATE DATABASE "{test_database}"'
+            print(f"Erstelle Test-Datenbank: {TEST_DATABASE}...")
+            create_query = f'CREATE DATABASE "{TEST_DATABASE}"'
             cur.execute(create_query)
             print("Test-Datenbank erstellt.")
         else:
-            print(f"Test-Datenbank '{test_database}' existiert bereits.")
+            print(f"Test-Datenbank '{TEST_DATABASE}' existiert bereits.")
     except Exception as e:
-        print(f"FEHLER beim Erstellen der Test-DB '{test_database}': {e}")
+        print(f"FEHLER beim Erstellen der Test-DB '{TEST_DATABASE}': {e}")
     finally:
         if conn:
             # Verbindung schließen

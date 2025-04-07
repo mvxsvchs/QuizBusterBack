@@ -5,10 +5,11 @@ import random
 # region ↓ Abfragen für "Kategorie" Objekt ↓
 
 # Klasse für Kategorie wie in Datenbank
+# pylint: disable=too-few-public-methods
 class Category:
     # Constructor
-    def __init__(self, id: int, name: str):
-        self.id = id
+    def __init__(self, category_id: int, name: str):
+        self.category_id = category_id
         self.name = name
 
 
@@ -17,7 +18,7 @@ def create_category(category_result: list) -> list[Category]:
     result = list[Category]()
     for row in category_result:
         # Aus jedem Eintrag der Datenbank wird ein Objekt erstellt
-        result.append(Category(id=int(row[0]), name=str(row[1])))
+        result.append(Category(category_id=int(row[0]), name=str(row[1])))
     return result
 
 
@@ -52,6 +53,7 @@ def get_category_list(count: int) -> list[Category]:
 # region ↓ Abfragen für "Frage" Objekt ↓
 
 # Klasse für Frage wie in Datenbank
+# pylint: disable=too-few-public-methods
 class Question:
     def __init__(self, category: str, question: str, correct_answer: str, incorrect_answers: list[str]):
         self.category = category
@@ -77,8 +79,10 @@ def get_question_list(category: int, count: int) -> list:
 
         # SQL Abfrage zum Erhalten aller Fragen der Kategorie
         get_query = (
-            'SELECT "Category"."name", "Question"."question_text", "Question"."correct_answer", "Question"."incorrect_answers" '
-            'FROM "Question" JOIN "Category" ON "Category"."ID" = "Question"."category_id" '
+            'SELECT "Category"."name", "Question"."question_text", '
+            '"Question"."correct_answer", "Question"."incorrect_answers" '
+            'FROM "Question" '
+            'JOIN "Category" ON "Category"."ID" = "Question"."category_id" '
             'WHERE "Question"."category_id" = %s;')
         cur.execute(get_query, (category,))
         # Alle Datensätze werden abgerufen

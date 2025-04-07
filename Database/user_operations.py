@@ -4,6 +4,7 @@ from Database.database import get_connection
 # region ↓ Abfragen für "Nutzer" Objekt ↓
 
 # Klasse für User wie in Datenbank
+# pylint: disable=too-few-public-methods
 class UserModel:
     # Constructor
     def __init__(self, username: str, password: str, score):
@@ -100,7 +101,7 @@ def update_points(username: str, points: int) -> int:
         # Zu dem bestehenden score wird das neue Ergebnis dazu addiert
         updated_points = int(user.score or 0) + points
 
-        # Das score Feld für den Nutzer wird mit dem neuen Wert geupdated
+        # Das score Feld für den Nutzer wird mit dem neuen Wert ge-updated
         update_query = ('UPDATE "User" '
                         'SET "score" = %s '
                         'WHERE "username" = %s;')
@@ -118,6 +119,7 @@ def update_points(username: str, points: int) -> int:
 
 
 # Klasse für Score des Nutzers
+# pylint: disable=too-few-public-methods
 class ScoreModel:
     # Constructor
     def __init__(self, username: str, score: int):
@@ -139,8 +141,8 @@ def get_scores(limit: int) -> list[ScoreModel]:
         conn = get_connection()
         cur = conn.cursor()
 
-        # Rufe Nutzername und score für die Top Nutzer in Absteigender Reihenfolge ab
-        # Nutzer ohne score werden rausgefiltert
+        # Rufe Nutzername und score für die top Nutzer in absteigender Reihenfolge ab
+        # Nutzer ohne score werden herausgefiltert
         get_query = ('SELECT "username", "score" '
                      'FROM "User" '
                      'WHERE "score" IS NOT NULL '
