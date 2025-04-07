@@ -10,6 +10,7 @@ from jwt import InvalidTokenError
 
 from Microservice.user_service import User
 from main import verify_user_token
+from Utils.auth_utils import verify_user_token
 
 
 # Testet, ob verify_user_token eine 401 HTTPException auslöst,
