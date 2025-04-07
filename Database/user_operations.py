@@ -6,7 +6,7 @@ von Benutzerdaten sowie zum Abrufen der Rangliste (Scores) bereit.
 Es definiert auch Datenmodellklassen (`UserModel`, `ScoreModel`), die Datenbankzeilen repräsentieren.
 """
 
-from typing import List, Tuple, Any, Optional
+from typing import List, Optional
 
 import psycopg
 
