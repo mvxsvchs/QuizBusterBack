@@ -26,7 +26,12 @@ from Microservice.achievement_service import (
     unlock_user_achievement,
     Achievement,
 )
-from Microservice.game_service import random_category_list, random_question_list
+from Microservice.game_service import (
+    random_category_list,
+    random_question_list,
+    all_category_list,
+    all_question_list,
+)
 from Microservice.user_service import (
     User,
     register,
@@ -34,7 +39,8 @@ from Microservice.user_service import (
     get_user,
     Score,
     update_score,
-    get_leaderboard, Token,
+    get_leaderboard,
+    Token,
 )
 
 # region ↓ App Initialisierung und Konfiguration ↓
@@ -158,6 +164,16 @@ async def get_category() -> list[Category]:
     return random_category_list(count=2)
 
 
+@app.get("/category/all", summary="Get all game categories")
+async def get_all_category() -> list[Category]:
+    """Gibt eine Liste von allen Spielkategorien zurück.
+
+    Returns:
+        list: Eine Liste von Spielkategorien.
+    """
+    return all_category_list()
+
+
 @app.get("/question", summary="Get random questions for a category")
 async def get_question(category: int) -> list[Question]:
     """Gibt eine Liste von zufälligen Fragen für eine gegebene Kategorie-ID zurück.
@@ -171,9 +187,22 @@ async def get_question(category: int) -> list[Question]:
     return random_question_list(category=category, count=3)
 
 
+@app.get("/question/all", summary="Get all questions for a category")
+async def get_all_question(category: int) -> list[Question]:
+    """Gibt eine Liste von allen Fragen für eine gegebene Kategorie-ID zurück.
+
+    Args:
+        category (int): Die ID der Kategorie als Query-Parameter (z.B. /question?category=1).
+
+    Returns:
+        list: Eine Liste von Fragen für die angegebene Kategorie.
+    """
+    return all_question_list(category=category)
+
+
 # endregion
 
-# region ↓ Rangliste Endpunkte ↓
+# region ↓ Leaderboard Endpunkte ↓
 
 @app.get("/score", summary="Get the leaderboard")
 async def get_scores() -> list[ScoreModel]:
@@ -266,9 +295,47 @@ async def patch_user_achievement(
     # Ruft den Service auf, um das Achievement für den Benutzer freizuschalten
     return unlock_user_achievement(username=current_user.username, achievement=achievement)
 
+
 # endregion
 
 # region ↓ Admin Endpunkte ↓
 
+@app.post("/question", summary="Create a new question")
+async def post_question() -> Question:
+    """Gibt eine Liste von zufälligen Fragen für eine gegebene Kategorie-ID zurück.
+
+    Args:
+        category (int): Die ID der Kategorie als Query-Parameter (z.B. /question?category=1).
+
+    Returns:
+        list: Eine Liste von Fragen für die angegebene Kategorie.
+    """
+    return
+
+
+@app.patch("/question", summary="Update an existing question")
+async def patch_question() -> Question:
+    """Gibt eine Liste von zufälligen Fragen für eine gegebene Kategorie-ID zurück.
+
+    Args:
+        category (int): Die ID der Kategorie als Query-Parameter (z.B. /question?category=1).
+
+    Returns:
+        list: Eine Liste von Fragen für die angegebene Kategorie.
+    """
+    return
+
+
+@app.delete("/question", summary="Deletes an existing question")
+async def delete_question() -> dict:
+    """Gibt eine Liste von zufälligen Fragen für eine gegebene Kategorie-ID zurück.
+
+    Args:
+        category (int): Die ID der Kategorie als Query-Parameter (z.B. /question?category=1).
+
+    Returns:
+        list: Eine Liste von Fragen für die angegebene Kategorie.
+    """
+    return
 
 # endregion

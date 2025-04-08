@@ -286,13 +286,12 @@ def get_scores(limit: int) -> list[ScoreModel]:
 
         # Ergebnis wird in Objekt gewandelt
         score_models = create_score(db_results)
-
+        return score_models
     except Exception as error:
         print(f"Fehler bei Abfrage der Top Scores (limit={limit}): {error}")
         # Sicherstellen, dass die Verbindung geschlossen wird, auch im Fehlerfall
         if conn and not conn.closed:
             conn.close()
         raise error
-    return score_models
 
 # endregion
