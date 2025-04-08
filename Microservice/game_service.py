@@ -2,11 +2,22 @@
 
 Es stellt einfache Funktionen bereit,
 um eine bestimmte Anzahl zufälliger Kategorien oder Fragen für eine
-spezifische Kategorie zu erhalten.
+spezifische Kategorie zu erhalten und um Fragen zu verwalten.
 """
 import random
 
-from Database.game_operations import get_category_list, get_question_list, QuestionModel, CategoryModel
+from fastapi import HTTPException
+
+from Database.game_operations import (
+    get_category_list,
+    get_question_list,
+    QuestionModel,
+    CategoryModel,
+    insert_question,
+    question_exists,
+    update_question,
+    delete_question,
+)
 from Microservice.api_models import Question
 
 
@@ -78,7 +89,7 @@ def random_question_list(category: int, count: int) -> list[QuestionModel]:
     return random_values
 
 
-def create_new_question(question: Question) -> QuestionModel:
+def create_new_question(question: Question) -> dict:
     """Fügt die gegebene Frage in die Datenbank ein.
 
     Args:
@@ -86,8 +97,42 @@ def create_new_question(question: Question) -> QuestionModel:
                              hinzugefügt werden soll.
 
     Returns:
-        QuestionModel: Die neu angelegte Frage.
+        dict: Das Ergebnis der Funktion als einfache Nachricht.
     """
-    return get_question_list(category=category)
+    return insert_question(question=question)
+
+
+def update_existing_question(question_id: int, question: Question) -> dict:
+    """Fügt die gegebenen Werte in die Frage mit der gegebenen id ein.
+
+    Args:
+        question_id (int): Die id der Frage die geupdatet werden soll.
+        question (Question): Die neuen Werte der Frage die in die Datenbank
+                             hinzugefügt werden sollen.
+
+    Returns:
+        dict: Das Ergebnis der Funktion als einfache Nachricht.
+    """
+    existing = question_exists(question_id=question_id)
+    if existing:
+        return update_question(question_id=question_id, question=question)
+    else:
+        raise HTTPException(status_code=404, detail=f"Frage {question_id} existiert nicht.")
+
+
+def delete_existing_question(question_id: int) -> dict:
+    """Löscht die Frage mit der gegebenen id.
+
+    Args:
+        question_id (int): Die id der Frage die gelöscht werden soll.
+
+    Returns:
+        dict: Das Ergebnis der Funktion als einfache Nachricht.
+    """
+    existing = question_exists(question_id=question_id)
+    if existing:
+        return delete_question(question_id=question_id)
+    else:
+        raise HTTPException(status_code=404, detail=f"Frage {question_id} existiert nicht.")
 
 # endregion

@@ -28,7 +28,9 @@ class CategoryModel(BaseModel):
 # pylint: disable=too-few-public-methods
 class QuestionModel(BaseModel):
     """Repräsentiert eine einzelne Quizfrage mit Antworten."""
+    category_id: int
     category: str
+    question_id: int
     question: str
     correct_answer: str
     incorrect_answers: list[str]

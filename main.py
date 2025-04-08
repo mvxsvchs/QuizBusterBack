@@ -26,11 +26,15 @@ from Microservice.achievement_service import (
     unlock_user_achievement,
     Achievement,
 )
+from Microservice.api_models import Question
 from Microservice.game_service import (
     random_category_list,
     random_question_list,
     all_category_list,
     all_question_list,
+    create_new_question,
+    delete_existing_question,
+    update_existing_question,
 )
 from Microservice.user_service import (
     User,
@@ -272,7 +276,7 @@ async def get_user_achievements(
 @app.patch("/user/achievement", summary="Unlock an achievement for the current user")
 async def patch_user_achievement(
         current_user: Annotated[User, Depends(verify_user_token)],
-        achievement: Achievement  # Nimmt ID, Name, Beschreibung entgegen
+        achievement: Achievement
 ) -> dict:
     """Schaltet ein Achievement für den aktuell authentifizierten Benutzer frei.
 
@@ -301,41 +305,42 @@ async def patch_user_achievement(
 # region ↓ Admin Endpunkte ↓
 
 @app.post("/question", summary="Create a new question")
-async def post_question() -> QuestionModel:
-    """Gibt eine Liste von zufälligen Fragen für eine gegebene Kategorie-ID zurück.
+async def post_question(question: Question) -> dict:
+    """Erstellt eine neue Frage in der Datenbank.
 
     Args:
-        category (int): Die ID der Kategorie als Query-Parameter (z.B. /question?category=1).
+        question (Question): Die neue Frage als Body der API-Anfrage.
 
     Returns:
-        list: Eine Liste von Fragen für die angegebene Kategorie.
+        dict: Das Ergebnis der Funktion als einfache Nachricht.
     """
-    return
+    return create_new_question(question)
 
 
-@app.patch("/question", summary="Update an existing question")
-async def patch_question() -> QuestionModel:
-    """Gibt eine Liste von zufälligen Fragen für eine gegebene Kategorie-ID zurück.
+@app.patch("/question/{question_id}", summary="Update an existing question")
+async def patch_question(question_id: int, question: Question) -> dict:
+    """Updatet die gegebene Frage ID mit den Werten aus dem Body.
 
     Args:
-        category (int): Die ID der Kategorie als Query-Parameter (z.B. /question?category=1).
+        question_id (int): Die ID der Frage als Path-Parameter (z.B. /question/1).
+        question (Question): Die neuen Werte als Body der API-Anfrage.
 
     Returns:
-        list: Eine Liste von Fragen für die angegebene Kategorie.
+        dict: Das Ergebnis der Funktion als einfache Nachricht.
     """
-    return
+    return update_existing_question(question_id=question_id, question=question)
 
 
-@app.delete("/question", summary="Deletes an existing question")
-async def delete_question() -> dict:
-    """Gibt eine Liste von zufälligen Fragen für eine gegebene Kategorie-ID zurück.
+@app.delete("/question/{question_id}", summary="Deletes an existing question")
+async def delete_question(question_id: int) -> dict:
+    """Löscht die Frage mit der gegebenen ID.
 
     Args:
-        category (int): Die ID der Kategorie als Query-Parameter (z.B. /question?category=1).
+        question_id (int): Die ID der Frage als Path-Parameter (z.B. /question/1).
 
     Returns:
-        list: Eine Liste von Fragen für die angegebene Kategorie.
+        dict: Das Ergebnis der Funktion als einfache Nachricht.
     """
-    return
+    return delete_existing_question(question_id=question_id)
 
 # endregion
