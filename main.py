@@ -109,7 +109,7 @@ async def verify_user_token(token: Annotated[str, Depends(oauth2_scheme)]) -> Us
 
 # endregion
 
-# region ↓ API Endpunkte ↓
+# region ↓ User Endpunkte ↓
 
 @app.post("/register", summary="Register a new user")
 async def post_signup(user: User) -> Token:
@@ -144,6 +144,10 @@ async def post_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()])
     return login(form_data=form_data)
 
 
+# endregion
+
+# region ↓ Game Endpunkte ↓
+
 @app.get("/category", summary="Get random game categories")
 async def get_category() -> list[Category]:
     """Gibt eine Liste von zufälligen Spielkategorien zurück.
@@ -166,6 +170,10 @@ async def get_question(category: int) -> list[Question]:
     """
     return random_question_list(category=category, count=3)
 
+
+# endregion
+
+# region ↓ Rangliste Endpunkte ↓
 
 @app.get("/score", summary="Get the leaderboard")
 async def get_scores() -> list[ScoreModel]:
@@ -257,5 +265,10 @@ async def patch_user_achievement(
     """
     # Ruft den Service auf, um das Achievement für den Benutzer freizuschalten
     return unlock_user_achievement(username=current_user.username, achievement=achievement)
+
+# endregion
+
+# region ↓ Admin Endpunkte ↓
+
 
 # endregion

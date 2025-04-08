@@ -6,10 +6,7 @@ von Spielinhalten und stellt Funktionen bereit, um diese aus der Datenbank abzur
 Abhängigkeiten:
 - psycopg: Für die Datenbankverbindung.
 - Database.database: Stellt die `get_connection`-Funktion bereit.
-- random: Für die zufällige Auswahl von Elementen.
 """
-
-import random
 
 from pydantic import BaseModel
 
@@ -51,14 +48,11 @@ def create_category(category_result: list) -> list[Category]:
     return result
 
 
-def get_category_list(count: int) -> list[Category]:
-    """Ruft alle Kategorien ab und gibt eine zufällige Auswahl zurück.
-
-    Args:
-        count (int): Die Anzahl der zufällig auszuwählenden Kategorien.
+def get_category_list() -> list[Category]:
+    """Ruft alle Kategorien ab und gibt sie als Objekt zurück.
 
     Returns:
-        list[Category]: Eine Liste von `count` zufällig ausgewählten `Category`-Objekten.
+        list[Category]: Eine Liste von allen `Category`-Objekten.
 
     Raises:
         psycopg.OperationalError: Wenn die Datenbankverbindung fehlschlägt.
@@ -80,10 +74,8 @@ def get_category_list(count: int) -> list[Category]:
         cur.close()
         conn.close()
 
-        # Es werden zufällig gewählte Einträge aus der Liste gegeben
-        random_values = random.sample(all_results, count)
         # Der Datensatz im Listen-Format wird zu Objekt gewandelt
-        return create_category(random_values)
+        return create_category(all_results)
     except Exception as error:
         print(f"Fehler bei der Kategorie Abfrage: {error}")
         # Sicherstellen, dass die Verbindung geschlossen wird, auch im Fehlerfall
@@ -133,26 +125,19 @@ def create_question(question_result: list) -> list[Question]:
     return result
 
 
-def get_question_list(category: int, count: int) -> list[Question]:
-    """Ruft Fragen für eine Kategorie ab und gibt eine zufällige Auswahl zurück.
-
-    Stellt eine Verbindung zur Datenbank her, fragt alle Fragen für die gegebene
-    `category`-ID ab (inklusive Kategoriename), wählt zufällig `count` Einträge
-    aus diesen Ergebnissen aus, schließt die Verbindung und gibt die ausgewählten
-    Einträge als Liste von `Question`-Objekten zurück.
+def get_question_list(category: int) -> list[Question]:
+    """Ruft alle Fragen für eine Kategorie ab.
 
     Args:
         category (int): Die ID der Kategorie, für die Fragen abgerufen werden sollen.
-        count (int): Die Anzahl der zufällig auszuwählenden Fragen.
 
     Returns:
-        List[Question]: Eine Liste von `count` zufällig ausgewählten `Question`-Objekten
+        List[Question]: Eine Liste von allen `Question`-Objekten
                        aus der angegebenen Kategorie.
 
     Raises:
         psycopg.OperationalError: Wenn die Datenbankverbindung fehlschlägt.
         Exception: Bei anderen Fehlern während der Abfrage oder Verarbeitung.
-                   Der ursprüngliche Fehler wird weitergeworfen.
     """
     conn = None
     try:
@@ -174,10 +159,8 @@ def get_question_list(category: int, count: int) -> list[Question]:
         cur.close()
         conn.close()
 
-        # Es werden zufällig gewählte Einträge aus der Liste gegeben
-        random_values = random.sample(all_results, count)
         # Der Datensatz im Listen-Format wird zu Objekt gewandelt
-        return create_question(random_values)
+        return create_question(all_results)
     except Exception as error:
         print(f"Fehler bei der Fragen Abfrage für Kategorie {category}: {error}")
         # Sicherstellen, dass die Verbindung geschlossen wird, auch im Fehlerfall
