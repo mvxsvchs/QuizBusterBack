@@ -6,10 +6,8 @@ von Benutzerdaten sowie zum Abrufen der Rangliste (Scores) bereit.
 Es definiert auch Datenmodellklassen (`UserModel`, `ScoreModel`),
 die Datenbankzeilen repräsentieren.
 """
-
-from typing import List, Optional
-
 import psycopg
+from pydantic import BaseModel
 
 from Database.database import get_connection
 
@@ -17,21 +15,11 @@ from Database.database import get_connection
 # region ↓ Abfragen für "Nutzer" Objekt ↓
 
 # pylint: disable=too-few-public-methods
-class UserModel:
+class UserModel(BaseModel):
     """Repräsentiert einen Benutzerdatensatz, wie er aus der Datenbank gelesen wird."""
-
-    # Constructor
-    def __init__(self, username: str, password: str, score: Optional[int]):
-        """Initialisiert ein neues UserModel-Objekt.
-
-        Args:
-            username (str): Der Benutzername.
-            password (str): Das in der Datenbank gespeicherte Passwort (gehasht).
-            score (Optional[int]): Der aktuelle Punktestand des Benutzers (kann None sein).
-        """
-        self.username = username
-        self.password = password
-        self.score = score
+    username: str
+    password: str
+    score: int | None
 
 
 def create_user(user_result: list) -> UserModel:
@@ -126,7 +114,7 @@ def user_exists(username: str) -> bool:
         raise error
 
 
-def get_user_data(username: str, connection: Optional[psycopg.Connection] = None) -> UserModel:
+def get_user_data(username: str, connection: psycopg.Connection | None = None) -> UserModel:
     """Ruft die Daten eines Benutzers aus der Datenbank ab.
 
     Ermöglicht die Übergabe einer bestehenden Datenbankverbindung für Transaktionen.
@@ -162,9 +150,10 @@ def get_user_data(username: str, connection: Optional[psycopg.Connection] = None
         # Nur ein Datensatz wird abgerufen
         user_data_tuple = cur.fetchone()
 
-        # Verbindung nach Gebrauch schließen
         cur.close()
-        conn.close()
+        # Verbindung nach Gebrauch schließen
+        if connection is None:
+            conn.close()
 
         # Wandle das Ergebnis in ein UserModel um
         user_model = create_user(user_data_tuple)
@@ -233,19 +222,11 @@ def update_points(username: str, points: int) -> int:
 
 
 # pylint: disable=too-few-public-methods
-class ScoreModel:
+class ScoreModel(BaseModel):
     """Repräsentiert einen Eintrag in der Rangliste (Benutzername und Score)."""
-
+    username: str
+    score: int
     # Constructor
-    def __init__(self, username: str, score: int):
-        """Initialisiert ein neues ScoreModel-Objekt.
-
-        Args:
-            username (str): Der Benutzername.
-            score (int): Der erreichte Punktestand.
-        """
-        self.username = username
-        self.score = score
 
 
 def create_score(user_result: list) -> list[ScoreModel]:
@@ -270,14 +251,14 @@ def create_score(user_result: list) -> list[ScoreModel]:
     return result
 
 
-def get_scores(limit: int) -> List[ScoreModel]:
+def get_scores(limit: int) -> list[ScoreModel]:
     """Ruft die Top limit Ranglistenplätze (Benutzername und Score) aus der Datenbank ab.
 
     Args:
         limit (int): Die maximale Anzahl der zurückzugebenden Ranglistenplätze.
 
     Returns:
-        List[ScoreModel]: Eine Liste der Top `ScoreModel`-Objekte, sortiert nach
+        list[ScoreModel]: Eine Liste der Top `ScoreModel`-Objekte, sortiert nach
                           Score absteigend.
 
     Raises:
