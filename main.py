@@ -43,7 +43,7 @@ app = FastAPI(title="Quiz Game API", version="1.0.0")
 # API Service config für die Website
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Erlaubt Anfragen vom React-Frontend
+    allow_origins=["http://localhost:5174"],  # Erlaubt Anfragen vom React-Frontend
     allow_credentials=True,  # Erlaubt Cookies/Credentials
     allow_methods=["*"],  # Erlaubt alle HTTP-Methoden
     allow_headers=["*"],  # Erlaubt alle HTTP-Header
