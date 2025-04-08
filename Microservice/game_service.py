@@ -4,10 +4,10 @@ Es stellt einfache Funktionen bereit,
 um eine bestimmte Anzahl zufälliger Kategorien oder Fragen für eine
 spezifische Kategorie zu erhalten.
 """
-from Database.game_operations import get_category_list, get_question_list
+from Database.game_operations import get_category_list, get_question_list, Question, Category
 
 
-def random_category_list(count: int) -> list:
+def random_category_list(count: int) -> list[Category]:
     """Ruft eine Liste mit einer zufälligen Auswahl an Kategorien ab.
 
     Diese Funktion dient als Wrapper für 'get_category_list' und fordert
@@ -23,7 +23,7 @@ def random_category_list(count: int) -> list:
     return get_category_list(count=count)
 
 
-def random_question_list(category: int, count: int) -> list:
+def random_question_list(category: int, count: int) -> list[Question]:
     """Ruft eine Liste mit einer zufälligen Auswahl an Fragen für eine bestimmte Kategorie ab.
 
     Diese Funktion dient als Wrapper für 'get_question_list' und fordert

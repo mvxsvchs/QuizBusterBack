@@ -3,7 +3,7 @@
 Dieses Modul enthält die Logik für alle Operationen, die Benutzer betreffen.
 """
 from datetime import datetime, timezone, timedelta
-from typing import Annotated, Optional, Dict, Any
+from typing import Annotated
 
 import jwt
 from fastapi import HTTPException, Depends
@@ -96,7 +96,7 @@ def get_user(username: str) -> UserModel:
     return get_user_data(username=username)
 
 
-def authenticate_user(username: str, password: str) -> Optional[UserModel]:
+def authenticate_user(username: str, password: str) -> UserModel | None:
     """Authentifiziert einen Benutzer anhand von Benutzername und Passwort.
 
     Prüft, ob der Benutzer existiert und ob das angegebene Passwort mit dem
@@ -107,8 +107,8 @@ def authenticate_user(username: str, password: str) -> Optional[UserModel]:
         password (str): Das Passwort (Klartext) für den Login-Versuch.
 
     Returns:
-        Optional[UserModel]: Das `UserModel`-Objekt des Benutzers bei erfolgreicher
-                             Authentifizierung, andernfalls `None`.
+        UserModel: Das `UserModel`-Objekt des Benutzers bei erfolgreicher
+                   Authentifizierung, andernfalls `None`.
     """
     user = get_user(username=username)
     # Prüft, ob der Benutzer existiert
@@ -125,7 +125,7 @@ def authenticate_user(username: str, password: str) -> Optional[UserModel]:
 
 # region ↓ Token-Erstellung ↓
 
-def create_access_token(data: Dict[str, Any]) -> str:
+def create_access_token(data) -> str:
     """Erstellt einen JWT Access Token mit Ablaufdatum.
 
     Kodiert die übergebenen Daten (sollten 'sub' für den Benutzernamen enthalten)

@@ -17,7 +17,9 @@ from jwt import InvalidTokenError
 from starlette.middleware.cors import CORSMiddleware
 
 from Config.jwt_config import SECRET_KEY, ALGORITHM
-from Database.user_operations import UserModel
+from Database.achievement_operations import AchievementModel
+from Database.game_operations import Question, Category
+from Database.user_operations import UserModel, ScoreModel
 from Microservice.achievement_service import (
     user_achievements,
     all_achievements,
@@ -143,7 +145,7 @@ async def post_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()])
 
 
 @app.get("/category", summary="Get random game categories")
-async def get_category() -> list:
+async def get_category() -> list[Category]:
     """Gibt eine Liste von zufälligen Spielkategorien zurück.
 
     Returns:
@@ -153,7 +155,7 @@ async def get_category() -> list:
 
 
 @app.get("/question", summary="Get random questions for a category")
-async def get_question(category: int) -> list:
+async def get_question(category: int) -> list[Question]:
     """Gibt eine Liste von zufälligen Fragen für eine gegebene Kategorie-ID zurück.
 
     Args:
@@ -166,7 +168,7 @@ async def get_question(category: int) -> list:
 
 
 @app.get("/score", summary="Get the leaderboard")
-async def get_scores() -> list:
+async def get_scores() -> list[ScoreModel]:
     """Gibt die Top-Rangliste (Leaderboard) der Benutzer-Scores zurück.
 
     Returns:
@@ -199,7 +201,7 @@ async def patch_score(
 
 
 @app.get("/achievement", summary="Get all possible achievements")
-async def get_achievements() -> list[Achievement]:
+async def get_achievements() -> list[AchievementModel]:
     """Gibt eine Liste aller im System definierten Achievements zurück.
 
     Returns:
@@ -211,7 +213,7 @@ async def get_achievements() -> list[Achievement]:
 @app.get("/user/achievement", summary="Get achievements of current user")
 async def get_user_achievements(
         current_user: Annotated[User, Depends(verify_user_token)]
-) -> list[Achievement]:
+) -> list[AchievementModel]:
     """Gibt eine Liste der Achievements zurück,
        die der aktuell authentifizierte Benutzer erreicht hat.
 

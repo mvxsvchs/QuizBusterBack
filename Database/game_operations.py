@@ -10,7 +10,8 @@ Abhängigkeiten:
 """
 
 import random
-from typing import List
+
+from pydantic import BaseModel
 
 from Database.database import get_connection
 
@@ -18,22 +19,13 @@ from Database.database import get_connection
 # region ↓ Abfragen für "Kategorie" Objekt ↓
 
 # pylint: disable=too-few-public-methods
-class Category:
+class Category(BaseModel):
     """Repräsentiert eine Fragen-Kategorie aus der Datenbank."""
-
-    # Constructor
-    def __init__(self, category_id: int, name: str):
-        """Initialisiert ein neues Kategorie-Objekt.
-
-        Args:
-            category_id (int): Die eindeutige ID der Kategorie.
-            name (str): Der Name der Kategorie.
-        """
-        self.category_id = category_id
-        self.name = name
+    category_id: int
+    name: str
 
 
-def create_category(category_result: list) -> List[Category]:
+def create_category(category_result: list) -> list[Category]:
     """Wandelt eine Liste von Datenbank-Zeilen in Category-Objekte um.
 
     Iteriert durch die Ergebnisliste der Datenbankabfrage und erstellt für jede Zeile
@@ -45,9 +37,9 @@ def create_category(category_result: list) -> List[Category]:
             `cursor.fetchall()` für Kategorien zurückgegeben wird.
 
     Returns:
-        List[Category]: Eine Liste von `Category`-Instanzen.
+        list[Category]: Eine Liste von `Category`-Instanzen.
     """
-    result: List[Category] = []
+    result: list[Category] = []
     for row in category_result:
         # Aus jedem Eintrag der Datenbank wird ein Objekt erstellt
         result.append(
@@ -59,14 +51,14 @@ def create_category(category_result: list) -> List[Category]:
     return result
 
 
-def get_category_list(count: int) -> List[Category]:
+def get_category_list(count: int) -> list[Category]:
     """Ruft alle Kategorien ab und gibt eine zufällige Auswahl zurück.
 
     Args:
         count (int): Die Anzahl der zufällig auszuwählenden Kategorien.
 
     Returns:
-        List[Category]: Eine Liste von `count` zufällig ausgewählten `Category`-Objekten.
+        list[Category]: Eine Liste von `count` zufällig ausgewählten `Category`-Objekten.
 
     Raises:
         psycopg.OperationalError: Wenn die Datenbankverbindung fehlschlägt.
@@ -105,31 +97,15 @@ def get_category_list(count: int) -> List[Category]:
 # region ↓ Abfragen für "Frage" Objekt ↓
 
 # pylint: disable=too-few-public-methods
-class Question:
+class Question(BaseModel):
     """Repräsentiert eine einzelne Quizfrage mit Antworten."""
-
-    def __init__(
-            self,
-            category: str,
-            question: str,
-            correct_answer: str,
-            incorrect_answers: list[str],
-    ):
-        """Initialisiert ein neues Frage-Objekt.
-
-        Args:
-            category (str): Der Name der Kategorie, zu der die Frage gehört.
-            question (str): Der Text der Frage.
-            correct_answer (str): Die korrekte Antwort.
-            incorrect_answers (list[str]): Eine Liste der falschen Antwortmöglichkeiten.
-        """
-        self.category = category
-        self.question = question
-        self.correct_answer = correct_answer
-        self.incorrect_answers = incorrect_answers
+    category: str
+    question: str
+    correct_answer: str
+    incorrect_answers: list[str]
 
 
-def create_question(question_result: list) -> List[Question]:
+def create_question(question_result: list) -> list[Question]:
     """Wandelt eine Liste von Datenbank-Zeilen in Question-Objekte um.
 
     Iteriert durch die Ergebnisliste der Datenbankabfrage und erstellt für jede Zeile
@@ -141,9 +117,9 @@ def create_question(question_result: list) -> List[Question]:
             `cursor.fetchall()` für Fragen zurückgegeben wird.
 
     Returns:
-        List[Question]: Eine Liste von `Question`-Instanzen.
+        list[Question]: Eine Liste von `Question`-Instanzen.
     """
-    result: List[Question] = []
+    result: list[Question] = []
     for row in question_result:
         # Aus jedem Eintrag der Datenbank wird ein Objekt erstellt
         result.append(
@@ -157,7 +133,7 @@ def create_question(question_result: list) -> List[Question]:
     return result
 
 
-def get_question_list(category: int, count: int) -> List[Question]:
+def get_question_list(category: int, count: int) -> list[Question]:
     """Ruft Fragen für eine Kategorie ab und gibt eine zufällige Auswahl zurück.
 
     Stellt eine Verbindung zur Datenbank her, fragt alle Fragen für die gegebene
