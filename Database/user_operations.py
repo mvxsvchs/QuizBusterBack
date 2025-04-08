@@ -7,20 +7,12 @@ Es definiert auch Datenmodellklassen (`UserModel`, `ScoreModel`),
 die Datenbankzeilen repräsentieren.
 """
 import psycopg
-from pydantic import BaseModel
 
 from Database.database import get_connection
+from Database.db_models import UserModel, ScoreModel
 
 
 # region ↓ Abfragen für "Nutzer" Objekt ↓
-
-# pylint: disable=too-few-public-methods
-class UserModel(BaseModel):
-    """Repräsentiert einen Benutzerdatensatz, wie er aus der Datenbank gelesen wird."""
-    username: str
-    password: str
-    score: int | None
-
 
 def create_user(user_result: list) -> UserModel:
     """Erstellt ein `UserModel`-Objekt aus einer einzelnen Datenbank-Zeile.
@@ -219,14 +211,6 @@ def update_points(username: str, points: int) -> int:
         if conn and not conn.closed:
             conn.close()
         raise error
-
-
-# pylint: disable=too-few-public-methods
-class ScoreModel(BaseModel):
-    """Repräsentiert einen Eintrag in der Rangliste (Benutzername und Score)."""
-    username: str
-    score: int
-    # Constructor
 
 
 def create_score(user_result: list) -> list[ScoreModel]:

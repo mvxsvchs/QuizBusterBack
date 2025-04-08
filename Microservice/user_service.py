@@ -8,7 +8,6 @@ from typing import Annotated
 import jwt
 from fastapi import HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
-from pydantic import BaseModel
 from passlib.context import CryptContext
 
 # Importiert Konfiguration und Datenbankoperationen+Modelle
@@ -22,31 +21,7 @@ from Database.user_operations import (
     get_scores,
     ScoreModel,
 )
-
-
-# region ↓ API Modelle ↓
-
-# pylint: disable=too-few-public-methods
-class User(BaseModel):
-    """Repräsentiert Benutzerdaten für Registrierung."""
-    username: str
-    password: str
-
-
-# pylint: disable=too-few-public-methods
-class Token(BaseModel):
-    """Repräsentiert die JWT Access Token Antwort nach erfolgreichem Login+Registrierung."""
-    access_token: str
-    token_type: str
-
-
-# pylint: disable=too-few-public-methods
-class Score(BaseModel):
-    """Repräsentiert Punktdaten für Updates."""
-    points: int
-
-
-# endregion
+from Microservice.api_models import Token, User, Score
 
 # region ↓ Passwort-Handling ↓
 

@@ -6,20 +6,13 @@ für die API-Anfragen und ruft entsprechende Funktionen aus dem Datenbank-Modul 
 um Achievements abzurufen oder einem Benutzer zuzuweisen.
 """
 
-from pydantic import BaseModel
-
 from Database.achievement_operations import (
     get_achievement_list,
     get_user_achievement_list,
     add_user_achievement,
     AchievementModel,
 )
-
-
-# pylint: disable=too-few-public-methods
-class Achievement(BaseModel):
-    """Modell zur Repräsentation einer Achievement-Anfrage."""
-    id: int
+from Microservice.api_models import Achievement
 
 
 def all_achievements() -> list[AchievementModel]:

@@ -18,7 +18,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from Config.jwt_config import SECRET_KEY, ALGORITHM
 from Database.achievement_operations import AchievementModel
-from Database.game_operations import Question, Category
+from Database.game_operations import QuestionModel, CategoryModel
 from Database.user_operations import UserModel, ScoreModel
 from Microservice.achievement_service import (
     user_achievements,
@@ -155,7 +155,7 @@ async def post_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()])
 # region ↓ Game Endpunkte ↓
 
 @app.get("/category", summary="Get random game categories")
-async def get_category() -> list[Category]:
+async def get_category() -> list[CategoryModel]:
     """Gibt eine Liste von zufälligen Spielkategorien zurück.
 
     Returns:
@@ -165,7 +165,7 @@ async def get_category() -> list[Category]:
 
 
 @app.get("/category/all", summary="Get all game categories")
-async def get_all_category() -> list[Category]:
+async def get_all_category() -> list[CategoryModel]:
     """Gibt eine Liste von allen Spielkategorien zurück.
 
     Returns:
@@ -175,7 +175,7 @@ async def get_all_category() -> list[Category]:
 
 
 @app.get("/question", summary="Get random questions for a category")
-async def get_question(category: int) -> list[Question]:
+async def get_question(category: int) -> list[QuestionModel]:
     """Gibt eine Liste von zufälligen Fragen für eine gegebene Kategorie-ID zurück.
 
     Args:
@@ -188,7 +188,7 @@ async def get_question(category: int) -> list[Question]:
 
 
 @app.get("/question/all", summary="Get all questions for a category")
-async def get_all_question(category: int) -> list[Question]:
+async def get_all_question(category: int) -> list[QuestionModel]:
     """Gibt eine Liste von allen Fragen für eine gegebene Kategorie-ID zurück.
 
     Args:
@@ -301,7 +301,7 @@ async def patch_user_achievement(
 # region ↓ Admin Endpunkte ↓
 
 @app.post("/question", summary="Create a new question")
-async def post_question() -> Question:
+async def post_question() -> QuestionModel:
     """Gibt eine Liste von zufälligen Fragen für eine gegebene Kategorie-ID zurück.
 
     Args:
@@ -314,7 +314,7 @@ async def post_question() -> Question:
 
 
 @app.patch("/question", summary="Update an existing question")
-async def patch_question() -> Question:
+async def patch_question() -> QuestionModel:
     """Gibt eine Liste von zufälligen Fragen für eine gegebene Kategorie-ID zurück.
 
     Args:

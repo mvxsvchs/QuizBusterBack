@@ -6,19 +6,12 @@ Es nutzt die `psycopg`-Bibliothek und die zentrale `get_connection`-Funktion
 für die Datenbankverbindung.
 """
 from psycopg import errors as psycopg_errors
-from pydantic import BaseModel
 
 from Database.database import get_connection
+from Database.db_models import AchievementModel
 
 
 # region ↓ Abfragen für "Achievement" Objekt ↓
-
-# pylint: disable=too-few-public-methods
-class AchievementModel(BaseModel):
-    """Repräsentiert ein einzelnes Achievement aus der Datenbank."""
-    achievement_id: int
-    name: str
-    description: str
 
 
 def create_achievement(achievement_result: list) -> list[AchievementModel]:

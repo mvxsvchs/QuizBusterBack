@@ -6,10 +6,13 @@ spezifische Kategorie zu erhalten.
 """
 import random
 
-from Database.game_operations import get_category_list, get_question_list, Question, Category
+from Database.game_operations import get_category_list, get_question_list, QuestionModel, CategoryModel
+from Microservice.api_models import Question
 
 
-def all_category_list() -> list[Category]:
+# region ↓ Category methods ↓
+
+def all_category_list() -> list[CategoryModel]:
     """Ruft eine Liste mit allen Kategorien ab.
 
     Returns:
@@ -18,7 +21,7 @@ def all_category_list() -> list[Category]:
     return get_category_list()
 
 
-def random_category_list(count: int) -> list[Category]:
+def random_category_list(count: int) -> list[CategoryModel]:
     """Ruft eine Liste mit allen Kategorien ab und gibt eine zufällige Auswahl zurück.
 
     Diese Funktion fordert alle Kategorien aus der Datenbank an
@@ -37,7 +40,12 @@ def random_category_list(count: int) -> list[Category]:
     return random_values
 
 
-def all_question_list(category: int, ) -> list[Question]:
+# endregion
+
+# region ↓ Question methods ↓
+
+
+def all_question_list(category: int, ) -> list[QuestionModel]:
     """Ruft eine Liste mit allen Fragen für eine bestimmte Kategorie ab..
 
     Args:
@@ -49,7 +57,7 @@ def all_question_list(category: int, ) -> list[Question]:
     return get_question_list(category=category)
 
 
-def random_question_list(category: int, count: int) -> list[Question]:
+def random_question_list(category: int, count: int) -> list[QuestionModel]:
     """Ruft eine Liste mit allen Fragen für eine bestimmte Kategorie ab
        und gibt eine zufällige Auswahl zurück.
 
@@ -68,3 +76,18 @@ def random_question_list(category: int, count: int) -> list[Question]:
     # Es werden zufällig gewählte Einträge aus der Liste gegeben
     random_values = random.sample(results, count)
     return random_values
+
+
+def create_new_question(question: Question) -> QuestionModel:
+    """Fügt die gegebene Frage in die Datenbank ein.
+
+    Args:
+        question (Question): Die Frage die in die Datenbank
+                             hinzugefügt werden soll.
+
+    Returns:
+        QuestionModel: Die neu angelegte Frage.
+    """
+    return get_question_list(category=category)
+
+# endregion
